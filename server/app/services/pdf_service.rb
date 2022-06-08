@@ -4,13 +4,13 @@ require 'openssl'
 require 'json'
 require 'rails'
 
-Rails.application.credentials.aws.access_key_id
+#Rails.application.credentials.aws.access_key_id
 
 class PdfService
     def call
         textract = Aws::Textract::Client.new(
-        access_key_id: 'yourcredentials',
-        secret_access_key: 'yourcredentials',
+        access_key_id: 'AKIATAQZ5QU7355Y6S5B',
+        secret_access_key: 'NJcPGu4WpOw4eafeltbP+v87FK8sxa0cs5pTS/oP',
         region: 'us-east-1'
     )
     
@@ -21,7 +21,7 @@ class PdfService
             name: "03a2860b_4f92_4112_a962_457a53bed3b4_kenco_order.pdf", #S3 Object name
         },
     },
-    feature_types: ["TABLES"],
+    feature_types: ["TABLES", "FORMS"],
     })
     
     resp = textract.get_document_analysis({
@@ -35,10 +35,86 @@ class PdfService
         puts resp.job_status
         sleep(2)
     end
+
     if resp.job_status == "SUCCEEDED"
-        puts resp.blocks[25].text
+
+        extractedKey = ""
+        prevExtractedKey = ""
+        extractedValue = ""
+
+        keyValueHash = Hash.new( "pair" )
+
+        for index in (0...resp.blocks.length)
+            
+            if resp.blocks[index].block_type == "KEY_VALUE_SET" 
+
+                if resp.blocks[index].relationships.nil? == false
+                    
+                    for x in (0...resp.blocks[index].relationships.length)
+
+                        if resp.blocks[index].entity_types[0] == "KEY"
+                            if resp.blocks[index].relationships[x].type == "CHILD"
+                            
+                                extractedKey = ""
+
+                                for a in (0...resp.blocks[index].relationships[x].ids.length)
+                                    extrId = resp.blocks[index].relationships[x].ids[a]
+                                    extractedKey += resp.blocks.find{|b| b.id == extrId}.text
+                                    extractedKey += " " 
+
+                                end
+
+                            end
+
+                        end
+
+                        if resp.blocks[index].entity_types[0] == "VALUE"
+                            
+                            if resp.blocks[index].relationships[x].type == "CHILD"
+                                
+                                extractedValue = ""
+
+                                for a in (0...resp.blocks[index].relationships[x].ids.length)
+                                    extrId = resp.blocks[index].relationships[x].ids[a]
+                                    extractedValue += resp.blocks.find{|b| b.id == extrId}.text
+                                    extractedValue += " "
+                                end
+
+                            end
+
+                        end
+
+                    end
+
+                end
+
+                if(extractedKey != "")
+                    #puts "\nKEY: "
+                    #puts extractedKey
+                    prevExtractedKey = extractedKey
+                    extractedKey = ""
+                end
+
+                if(extractedValue != "")
+                    #puts "VALUE: "
+                    #puts extractedValue
+                    
+                    keyValueHash.store(prevExtractedKey, extractedValue)
+
+                    prevExtractedKey = ""
+                    extractedValue = ""
+                end
+
+            end
+
+
+        end
+
+        puts keyValueHash
+
     end
-    end
+
+end
 end
 
 P1 = PdfService.new.call
