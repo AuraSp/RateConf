@@ -15,7 +15,7 @@ require 'aws-sdk'
                     name: "03a2860b_4f92_4112_a962_457a53bed3b4_kenco_order.pdf", #S3 Object name
                 },
             },
-            feature_types: ["TABLES"],
+            feature_types: ["TABLES", "FORMS"],
             })
             
             resp = textract.get_document_analysis({
@@ -24,8 +24,8 @@ require 'aws-sdk'
 
             while resp.job_status != "SUCCEEDED"
                 resp = textract.get_document_analysis({
-                job_id: request.job_id,
-            })
+                    job_id: request.job_id,
+                })
                 puts resp.job_status
                 sleep(2)
             end
@@ -40,10 +40,10 @@ require 'aws-sdk'
 
                 for index in (0...resp.blocks.length)
             
-                    if resp.blocks[index].block_type == "KEY_VALUE_SET" 
+                    if resp.blocks[index].block_type == "KEY_VALUE_SET"
 
                         if resp.blocks[index].relationships.nil? == false
-                    
+
                             for x in (0...resp.blocks[index].relationships.length)
 
                                 if resp.blocks[index].entity_types[0] == "KEY"
@@ -82,31 +82,31 @@ require 'aws-sdk'
 
                         end
 
-                    if(extractedKey != "")
-                        #puts "\nKEY: "
-                        #puts extractedKey
-                        prevExtractedKey = extractedKey
-                        extractedKey = ""
-                    end
+                        if(extractedKey != "")
+                            #puts "\nKEY: "
+                            #puts extractedKey
+                            prevExtractedKey = extractedKey
+                            extractedKey = ""
+                        end
 
-                    if(extractedValue != "")
-                        #puts "VALUE: "
-                        #puts extractedValue
+                        if(extractedValue != "")
+                            #puts "VALUE: "
+                            #puts extractedValue
                     
-                        keyValueHash.store(prevExtractedKey, extractedValue)
+                            keyValueHash.store(prevExtractedKey, extractedValue)
 
-                        prevExtractedKey = ""
-                        extractedValue = ""
+                            prevExtractedKey = ""
+                            extractedValue = ""
+                        end
+
                     end
-                end
 
+                end
+            
+                puts keyValueHash
 
             end
 
-            puts keyValueHash
-
         end
-
     end
-    
-end
+
