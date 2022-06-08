@@ -2,7 +2,6 @@ require "RMagick"
 require "chilkat"
 
 class PdfController < ApplicationController
-  before_action :authenticate
 
   # #http://localhost:3000/pdf/index?pdfBase64=your base64 here
   def index
