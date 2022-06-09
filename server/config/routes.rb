@@ -1,3 +1,3 @@
 Rails.application.routes.draw do
-  get 'pdf/index'
+  get 'pdfapi/index'
 end
