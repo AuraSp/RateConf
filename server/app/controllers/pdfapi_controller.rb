@@ -14,10 +14,10 @@ class PdfapiController < ApplicationController
         #coming soon
       #extract useful information
       extractedData = ExtractorService.new.extractData(params[:company])
-      
-      render json: { status: "SUCCESS", message: "Loaded", data: extractedData }, status: :ok
+
+      render json: { status: "SUCCESS", data: extractedData }, status: :ok
     rescue Exception => ex
-      render json: { status: "FAILURE", message: "Not loaded", data: ex }, status: :ok
+      render json: { status: "FAILURE", data: ex.backtrace }, status: 500
     ensure
 
     end
