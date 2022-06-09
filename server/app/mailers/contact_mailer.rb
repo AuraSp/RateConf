@@ -1,8 +1,20 @@
 class ContactMailer < ApplicationMailer
 
-  def error_email(error_message)
+  def pdf_null(error_message)
     @error_message = error_message
 
-    mail(to: Rails.application.credentials.config.dig(:admin_email), subject: "Welcome to My Awesome Site")
+    mail(to: Rails.application.credentials.config.dig(:admin_email), subject: "Pdf=null")
+  end
+
+  def pdfInDB_null(error_message)
+    @error_message = error_message
+
+    mail(to: Rails.application.credentials.config.dig(:admin_email), subject: "PdfInDB=-1")
+  end
+
+  def analyzedData_null(error_message)
+    @error_message = error_message
+
+    mail(to: Rails.application.credentials.config.dig(:admin_email), subject: "AnalyzedData=null")
   end
 end
