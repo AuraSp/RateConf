@@ -6,7 +6,7 @@ class PdfService
   def decodePdfFromB64(b64)
     pdfData = Chilkat::CkBinData.new()
     pdfData.AppendEncoded(b64, "base64")
-    success = pdfData.WriteFile("test1.pdf")
+    success = pdfData.WriteFile("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/test2.pdf")
     return pdfData
   end
 
