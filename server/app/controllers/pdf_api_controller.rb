@@ -1,10 +1,12 @@
 require "RMagick"
 require "chilkat"
 
-class PdfapiController < ApplicationController
+class PdfApiController < ApplicationController
+
+ 
 
   # #http://localhost:3000/pdf/index?pdfBase64="your base64 here"?company="company name here"
-  def index
+  def create
     begin
       #request s3 to analyze the file
         #coming soon

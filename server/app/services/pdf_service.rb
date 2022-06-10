@@ -1,12 +1,12 @@
 require "aws-sdk"
-require "RMagick"
+require "rmagick"
 require "chilkat"
 
 class PdfService
   def decodePdfFromB64(b64)
     pdfData = Chilkat::CkBinData.new()
     pdfData.AppendEncoded(b64, "base64")
-    #success = pdfData.WriteFile("/home/rytis/Documents/GitHub/rateconfocr/server/app/controllers/testConverted.pdf")
+    success = pdfData.WriteFile("test1.pdf")
     return pdfData
   end
 
