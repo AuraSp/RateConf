@@ -45,7 +45,13 @@ class DataExtractorService
   #extract function returning tables
   #very shit currently
   def extractKeyTableData(awsBlocks)
-    tableBlocks = awsBlocks.select { |b| b.block_type == "TABLE" && b.relationships.nil? == false }
+    extractedData = []
+    #buffer 2d array
+    extractedArray = Array.new(10) { Array.new(10) { } }
+    mainblocks = nil
+    mainblocks = getBlocks(awsBlocks, awsBlocks[0].relationships[0].ids)
+    tableBlocks = mainblocks.select { |b| b.block_type == "TABLE" && b.relationships.nil? == false }
+
     tableBlocks.each do |block|
       block.relationships.each do |blockRelationships|
         cellBlocks = getBlocks(awsBlocks, blockRelationships.ids)
@@ -53,11 +59,15 @@ class DataExtractorService
         cellBlocks.each do |cellBlock|
           cellBlock.relationships.each do |cellRelation|
             blocksFromId = getBlocks(awsBlocks, cellRelation.ids)
-            puts getTextFromBlocks(blocksFromId)
+            extractedArray[cellBlock.row_index-1][cellBlock.column_index-1] = getTextFromBlocks(blocksFromId)
           end
         end
       end
+      extractedData.push(extractedArray.map(&:compact).reject(&:empty?))
+      extractedArray = Array.new(10) { Array.new(10) { } }
     end
+
+    return extractedData
   end
 
   #Helper functions
