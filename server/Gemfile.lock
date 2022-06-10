@@ -1358,11 +1358,11 @@ GEM
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
+    jmespath (1.6.1)
     launchy (2.5.0)
       addressable (~> 2.7)
     letter_opener (1.8.1)
       launchy (>= 2.2, < 3)
-    jmespath (1.6.1)
     loofah (2.18.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -1502,8 +1502,8 @@ DEPENDENCIES
   puma (~> 5.0)
   rack-cors
   rails (~> 7.0.3)
-  rufo
   rmagick
+  rufo
   selenium-webdriver
   sprockets-rails
   sqlite3 (~> 1.4)
