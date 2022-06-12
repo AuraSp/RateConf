@@ -1,12 +1,15 @@
 require "aws-sdk"
 
-class ExtractorService  
+class ExtractorService
   PdfField = Struct.new(:value, :x, :y, :width, :height)
-  def extractData(company, responseBlocks=nil)
+
+  def extractData(company, responseBlocks = nil)
     #temporary data to simulate aws response blocks
-    text = File.read("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/data.json")
+    # text = File.read("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/data.json")
+    text = File.read("/home/ubuntu/Desktop/rateconfocr/server/app/services/data.json")
+
     responseBlocks = JSON.parse(text, object_class: OpenStruct)
-    
+
     #Company parameter
     #kenco/rjw
 
@@ -42,7 +45,7 @@ class ExtractorService
     # end
 
     # if resp.job_status == "SUCCEEDED"
-      
+
     # end
 
     case company
@@ -51,7 +54,7 @@ class ExtractorService
     when "rjw"
       extractData_rjw(responseBlocks)
     else
-      raise RuntimeError, "You messed up!"
+      raise RuntimeError
     end
   end
 
