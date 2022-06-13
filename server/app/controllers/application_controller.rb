@@ -1,17 +1,16 @@
 class ApplicationController < ActionController::Base
-  TOKEN = "Test"
+  # TOKEN = "Test"
 
-  before_action :authenticate
+  # before_action :authenticate
 
-  private
+  # private
 
-  def authenticate
-    authenticate_or_request_with_http_token do |token, options|
-      ActiveSupport::SecurityUtils.secure_compare(token, TOKEN)
-      ContactMailer.authorization_succesful().deliver_later
-      Rails.logger.info "Someone accessed the API"
-    end
-  end
+  # def authenticate
+  #   authenticate_or_request_with_http_token do |token, options|
+  #     ActiveSupport::SecurityUtils.secure_compare(token, TOKEN)
+  #     ContactMailer.authorization_succesful().deliver_later
+  #   end
+  # end
 
   # FOR BASIC AUTHENTICATION
 

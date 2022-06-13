@@ -62,10 +62,12 @@ class ExtractorService
   #Probably will change to custom config files
   def extractData_kenco(awsBlocks)
     keyValuePairs = DataExtractorService.new.extractKeyValuePairs(awsBlocks)
+  rescue ScriptError
     #extractKeyTableData(awsBlocks)
   end
 
   def extractData_rjw(awsBlocks)
     puts extractKeyValuePairs(awsBlocks)
+  rescue ScriptError
   end
 end

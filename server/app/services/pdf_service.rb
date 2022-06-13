@@ -14,7 +14,8 @@ class PdfService
     pdfData = Chilkat::CkBinData.new()
     success = pdfData.LoadFile(path)
     if (success != true)
-      print "failed to load PDF file." + "\n"
+      # print "failed to load PDF file." + "\n"
+      raise ScriptError
       exit
     end
     return pdfData.getEncoded("base64")

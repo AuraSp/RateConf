@@ -7,8 +7,6 @@ Rails.application.routes.draw do
       get "pdfapi/index"
     end
   end
-
-  get "pdfapi/index"
 end
 
 # require "api_constraints"
@@ -17,13 +15,16 @@ end
 #   namespace :api do
 #     scope module: :v1, constraints: ApiConstraints.new(version: 1) do
 #       get "pdfapi/index"
+#       # resources :pdfapi
 #     end
-#     namespace :api do
-#       scope module: :v2, constraints: ApiConstraints.new(version: 2, default: true) do
-#         get "pdfapi/index"
-#       end
-#     end
+#     # scope module: :v2, constraints: ApiConstraints.new(version: 2), path: "/" do
+#     #   get "pdfapi/index"
+#     #   # resources :pdfapi
+#     # end
+#     # scope module: :v3, constraints: ApiConstraints.new(version: 3), path: "/" do
+#     #   get "pdfapi/index"
+#     #   # resources :pdfapi
+#     # end
 #   end
 
-#   # get "pdfapi/index"
 # end

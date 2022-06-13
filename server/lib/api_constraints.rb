@@ -5,6 +5,9 @@
 #   end
 
 #   def matches?(req)
-#     @default || req.headers['Accept'].include?("application/vnd.example.v#{@version}")
+#     @default ||
+#     (req.respond_to?("headers") &&
+#      req.headers.key?("Accept") &&
+#      req.headers["Accept"].include?("application/vnd.example + v#{@version}"))
 #   end
 # end
