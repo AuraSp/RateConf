@@ -1,15 +1,18 @@
 require "RMagick"
 require "chilkat"
 
-class PdfapiController < ApplicationController
+class PdfApiController < ApplicationController
 
-  # #http://localhost:3000/pdf/index?pdfBase64="your base64 here"?company="company name here"
-  def index
+ 
+
+  # #http://localhost:3000/pdf_api/
+  def create
     begin
       #request s3 to analyze the file
-        #coming soon
+      uploadData = S3Service.new.run(params[:pdfBase64])
       #extract useful information
       extractedData = ExtractorService.new.extractData(params[:company])
+
 
       render json: { status: "SUCCESS", data: extractedData }, status: :ok
     rescue Exception => ex

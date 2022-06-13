@@ -1,23 +1,24 @@
 require "aws-sdk"
-require "RMagick"
+require "rmagick"
 require "chilkat"
 
 class PdfService
   def decodePdfFromB64(b64)
-    pdfData = Chilkat::CkBinData.new()
-    pdfData.AppendEncoded(b64, "base64")
-    #success = pdfData.WriteFile("/home/rytis/Documents/GitHub/rateconfocr/server/app/controllers/testConverted.pdf")
-    return pdfData
+    File.open("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/test3.pdf", "wb") do |f|
+      f.write(Base64.decode64(b64))
+    end
+    return Base64.decode64(b64)
   end
 
   def encodePdfToB64(path)
-    pdfData = Chilkat::CkBinData.new()
-    success = pdfData.LoadFile(path)
-    if (success != true)
-      print "failed to load PDF file." + "\n"
+    if (!File.file?(path))
+      print "failed to load PDF file."
       exit
     end
-    return pdfData.getEncoded("base64")
+
+    file = open(path)
+    b64 = Base64.encode64(file.read)
+    return b64
   end
 
   # Convert converted pdf into image for future slicing based on extracted data
