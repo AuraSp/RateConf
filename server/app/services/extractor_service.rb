@@ -5,14 +5,13 @@ class ExtractorService
   RateConfData = Struct.new(:salesRep, :customer, :notificationEmail, :loadInstrunctions, :customerLoad, :linehaulRate, :fuelSurcharge, :commodity, :weight, :stopData, keyword_init: true)
   RateConfStopData = Struct.new(:stopType, :pu, :companyName, :address, :phone, :customerAppTimeFrom, :customerAppTimeTo, keyword_init: true)
 
-  def extractData(company, responseBlocks=nil)
+  def extractData(company, responseBlocks)
     #temporary data to simulate aws response blocks
-    text = File.read("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/data.json")
-    responseBlocks = JSON.parse(text, object_class: OpenStruct)
-    
+    #text = File.read("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/data.json")
+    #responseBlocks = JSON.parse(text, object_class: OpenStruct)
+    puts responseBlocks[1].text
     #Company parameter
     #kenco/rjw
-
     case company
     when "kenco"
       extractData_kenco(responseBlocks)
