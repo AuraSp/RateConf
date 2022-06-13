@@ -1,3 +1,3 @@
 Rails.application.routes.draw do
-  get 'pdfapi/index'
+  resources :pdf_api, only: [:create]
 end
