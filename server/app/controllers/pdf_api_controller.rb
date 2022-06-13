@@ -9,7 +9,7 @@ class PdfApiController < ApplicationController
   def create
     begin
       #request s3 to analyze the file
-        uploadData = S3Service.new.run(params[:pdfBase64])
+      uploadData = S3Service.new.run(params[:pdfBase64])
       #extract useful information
       extractedData = ExtractorService.new.extractData(params[:company])
 
