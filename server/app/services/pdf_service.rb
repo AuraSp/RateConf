@@ -12,7 +12,7 @@ class PdfService
 
   def encodePdfToB64(path)
     if (!File.file?(path))
-      print "failed to load PDF file." + "\n"
+      print "failed to load PDF file."
       exit
     end
 
