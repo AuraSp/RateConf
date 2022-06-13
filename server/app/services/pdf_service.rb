@@ -11,13 +11,13 @@ class PdfService
   end
 
   def encodePdfToB64(path)
-    file = open(path)
-    puts file
-    b64 = Base64.encode64(file.read)
-    if (file != true)
+    if (!File.file?(path))
       print "failed to load PDF file." + "\n"
       exit
     end
+
+    file = open(path)
+    b64 = Base64.encode64(file.read)
     return b64
   end
 
