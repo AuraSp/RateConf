@@ -1,7 +1,7 @@
 require "aws-sdk"
 
 class TextractorJobService
-    def run(company, jobID)
+    def run(jobID, company)
         textract = Aws::Textract::Client.new(
                 access_key_id: Rails.application.credentials.aws.access_key_id,
                 secret_access_key: Rails.application.credentials.aws.secret_access_key,
@@ -14,7 +14,7 @@ class TextractorJobService
         })
 
         if response.job_status == "SUCCEEDED"
-            ExtractorService.new.extractData(company, response.blocks)
+            return ExtractorService.new.extractData(company, response.blocks)
         end
 
         if response.job_status == "IN_PROGRESS"
