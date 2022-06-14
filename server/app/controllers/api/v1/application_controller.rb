@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::Base
   TOKEN = "Test"
 
-  before_action :authenticate 
+  before_action :authenticate
+  protect_from_forgery with: :null_session
 
   private
 
