@@ -16,7 +16,7 @@ class AwsService
             )
         
 
-        path = "/home/rytis/Documents/GitHub/rateconfocr/server/app/services/test3.pdf" #path to file to upload
+        path = "/home/ubuntu/Desktop/rateconfocr/server/app/services/test3.pdf" #path to file to upload
         bucket_name = 'team3-pdfers-rateconfocr-bucket' #always remains the same
         object_key = File.basename([*'a'..'z', *0..9, *'A'..'Z'].shuffle[0..10].join + ".pdf") #randomly makes the file name
 

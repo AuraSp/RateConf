@@ -9,7 +9,7 @@ class PdfQueryService
 
     #request s3 to analyze the file
     uploadData = AwsService.new.uploadToS3()
-    @query.update(awsS3name: uploadData)
+    @query.update(aws_s3_name: uploadData)
     #receive jobID to access textract service data
     jobID = AwsService.new.awsTextract(uploadData)
 
@@ -30,11 +30,11 @@ class PdfQueryService
 
       if response.job_status == "SUCCEEDED"
         extractedData = ExtractorService.new.extractData(company, response.blocks)
-        @query.update(status: "finished", rateConfData: extractedData)
+        @query.update(status: "finished", rate_conf_data: extractedData)
         @query.save
       end
       if response.job_status == "FAILED"
-        @query.update(status: "failed", rateConfData: extractedData)
+        @query.update(status: "failed", rate_conf_data: extractedData)
         @query.save
         break
       end
