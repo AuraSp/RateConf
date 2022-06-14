@@ -46,5 +46,4 @@ class AwsService
         })
         return requestResponse.job_id
     end
-
 end
