@@ -8,12 +8,12 @@ class S3Service
     end
 
     def run(pdfBase64)
-        #creating aws client for S3 service
         s3 = Aws::S3::Resource.new(
                 access_key_id: Rails.application.credentials.aws.access_key_id,
                 secret_access_key: Rails.application.credentials.aws.secret_access_key,
                 region: Rails.application.credentials.aws.region
             )
+        
         path = PdfService.new.decodePdfFromB64(pdfBase64)
         bucket_name = 'team3-pdfers-rateconfocr-bucket' #always remains the same
         object_key = File.basename([*'a'..'z', *0..9, *'A'..'Z'].shuffle[0..10].join + ".pdf") #randomly makes the file name
@@ -26,5 +26,4 @@ class S3Service
             puts "Object '#{object_key}' not uploaded to bucket - '#{bucket_name}'."
         end
     end
-
 end

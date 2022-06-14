@@ -1,5 +1,6 @@
 class Api::V1::TextractorJobController < ApplicationController
 
+    #http://localhost:3000/api/v1/textractor_job
     def create
         company = params[:company]
         rateConfData = TextractorJobService.new.run(params[:jobID], company)
