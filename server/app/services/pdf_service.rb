@@ -2,12 +2,12 @@ require "aws-sdk"
 require "rmagick"
 require "chilkat"
 
-class PdfServiBase64ce
+class PdfService
   def decodePdfFromB64(b64)
     File.open("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/test3.pdf", "wb") do |f|
       f.write(Base64.decode64(b64))
     end
-    return .decode64(b64)
+    return Base64.decode64(b64)
   end
 
   def encodePdfToB64(path)
