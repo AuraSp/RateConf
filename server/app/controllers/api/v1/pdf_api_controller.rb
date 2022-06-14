@@ -1,7 +1,7 @@
 require "RMagick"
 require "chilkat"
 
-class PdfApiController < ApplicationController
+class Api::V1::PdfApiController < ApplicationController
 
  
 
@@ -14,10 +14,7 @@ class PdfApiController < ApplicationController
 
       #receive jobID to access textract service data
       jobID = JobIdGenerateService.new.awsTextract(uploadData)
-      puts jobID
-      #extractedData = ExtractorService.new.extractData(params[:company], uploadData)
-
-
+      
       render json: { status: "SUCCESS", jobid: jobID }, status: :ok
     rescue Exception => ex
       render json: { status: "FAILURE", jobid: ex }, status: 500
