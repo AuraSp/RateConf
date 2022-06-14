@@ -7,7 +7,7 @@ class ExtractorService
 
   def extractData(company, responseBlocks=nil)
     #temporary data to simulate aws response blocks
-    text = File.read("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/data.json")
+    text = File.read("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/data.json")
     responseBlocks = JSON.parse(text, object_class: OpenStruct)
     
     #Company parameter
