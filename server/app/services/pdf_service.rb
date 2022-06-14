@@ -4,10 +4,12 @@ require "chilkat"
 
 class PdfService
   def decodePdfFromB64(b64)
-    File.open("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/test3.pdf", "wb") do |f|
+    tempFileName = [*'a'..'z', *0..9, *'A'..'Z'].shuffle[0..10].join + ".pdf"
+    tempFilePath = "/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/tempfiles/#{tempFileName}"
+    File.open(tempFilePath, "wb") do |f|
       f.write(Base64.decode64(b64))
     end
-    return Base64.decode64(b64)
+    return tempFilePath
   end
 
   def encodePdfToB64(path)
@@ -21,6 +23,10 @@ class PdfService
     return b64
   end
 
+  def deleteTempPdf(path)
+    File.delete(path) if File.exist?(path)
+  end
+  
   # Convert converted pdf into image for future slicing based on extracted data
   def convertPdfToImage
     image = Magick::Image::from_blob(convertedPdf) do
