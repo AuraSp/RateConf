@@ -28,8 +28,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_14_063319) do
   create_table "users", force: :cascade do |t|
     t.string "headline"
     t.text "content"
+  end
+
+  create_table "queries", force: :cascade do |t|
+    t.string "queryId"
+    t.string "rateConfData"
+    t.string "errorData"
+    t.string "awsS3name"
+    t.string "status"
+    t.string "enquirer"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
-
 end
