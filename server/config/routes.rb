@@ -4,6 +4,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :pdf_api, only: [:create]
       resources :textractor_job, only: [:create]
-    end
+      resources :pdf_api do
+        collection do
+          get 'view'
+        end
+      end
   end
+end
 end
