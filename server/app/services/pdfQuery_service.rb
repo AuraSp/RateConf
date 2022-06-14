@@ -4,11 +4,10 @@ class PdfQueryService
   def startNewPdfAnalysis(queryUUID, base64Pdf, company)
     @query = Query.find(queryUUID)
     @query.update(status: "processing")
-
+    #decode uploaded pdf file
     PdfService.new.decodePdfFromB64(base64Pdf)
-
     #request s3 to analyze the file
-    uploadData = AwsService.new.uploadToS3()
+    uploadData = AwsService.new.uploadToS3(@query.queryId)
     @query.update(awsS3name: uploadData)
     #receive jobID to access textract service data
     jobID = AwsService.new.awsTextract(uploadData)
@@ -23,7 +22,7 @@ class PdfQueryService
       job_id: jobID,
     })
 
-    while response.job_status != "SUCCEEDED"
+    while true
       response = textract.get_document_analysis({
         job_id: jobID,
       })
@@ -32,6 +31,7 @@ class PdfQueryService
         extractedData = ExtractorService.new.extractData(company, response.blocks)
         @query.update(status: "finished", rateConfData: extractedData)
         @query.save
+        break
       end
       if response.job_status == "FAILED"
         @query.update(status: "failed", rateConfData: extractedData)
