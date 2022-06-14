@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2022_06_13_132219) do
-  create_table "queries", force: :cascade do |t|
+  create_table "queries", id: :string, force: :cascade do |t|
     t.string "queryId"
     t.string "rateConfData"
     t.string "errorData"
