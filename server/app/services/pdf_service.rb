@@ -15,20 +15,24 @@ class PdfService
     success = pdfData.LoadFile(path)
     if (success != true)
       # print "failed to load PDF file." + "\n"
+      # Audit.new({ :File_id => "1", :Process_status => false })
+      # Audit.save!
       raise ScriptError
       exit
     end
+    # Audit.create({ :File_id => "1", :Process_status => true })
+    # Audit.save!
     return pdfData.getEncoded("base64")
   end
 
   # Convert converted pdf into image for future slicing based on extracted data
   def convertPdfToImage
     image = Magick::Image::from_blob(convertedPdf) do
-      self.format = 'PDF'
+      self.format = "PDF"
       self.quality = 100
       self.density = 160
     end
-    image[0].format = 'JPG'
+    image[0].format = "JPG"
     image[0].to_blob
     return image[0]
   end

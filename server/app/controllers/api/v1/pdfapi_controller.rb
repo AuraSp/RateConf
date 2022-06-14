@@ -19,8 +19,13 @@ module Api
           extractedData = ExtractorService.new.extractData(params[:company])
 
           render json: { status: "SUCCESS", data: extractedData }, status: :ok
+
+          # need id
+          newAudit = Audit.create(:File_id => params[:company], :Process_status => true)
         rescue Exception => ex
           render json: { status: "FAILURE", data: ex.backtrace }, status: 500
+          # need id
+          newAudit = Audit.create(:File_id => params[:company], :Process_status => false)
         ensure
         end
       end
