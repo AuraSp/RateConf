@@ -7,7 +7,7 @@ class PdfService
     File.open("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/test3.pdf", "wb") do |f|
       f.write(Base64.decode64(b64))
     end
-    return Base64.decode64(b64)
+    return tempFilePath
   end
 
   def encodePdfToB64(path)
@@ -21,6 +21,10 @@ class PdfService
     return b64
   end
 
+  def deleteTempPdf(path)
+    File.delete(path) if File.exist?(path)
+  end
+  
   # Convert converted pdf into image for future slicing based on extracted data
   def convertPdfToImage
     image = Magick::Image::from_blob(convertedPdf) do
