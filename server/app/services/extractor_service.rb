@@ -146,14 +146,33 @@ class ExtractorService
       customerAppTimeFrom: customerAppTimeFrom, 
       customerAppTimeTo: customerAppTimeTo)
 
-    if(pdfData[105].include? "so")
-      puts "ahaaa"
-      #stopCompany += 
-      #implement if there are any other stops
+
+    #if there are any more stops
+    stop = 85
+
+    while pdfData[stop+20].include? "so"
+      puts "Aaaaaa"
+      stopCompany += 20
+      stopAddress += 20
+      stopFrom += 20
+      stopTo += 20
+
+      stopType = "Delivery"
+      companyName = pdfData[stopCompany]
+      address = pdfData[stopAddress]
+      customerAppTimeFrom = pdfData[stopFrom].insert(13, ':')
+      customerAppTimeTo = pdfData[stopTo].insert(13, ':')
+
+      deliveryStopData = RateConfStopData.new(
+      stopType: stopType, 
+      companyName: companyName, 
+      address: address,
+      customerAppTimeFrom: customerAppTimeFrom, 
+      customerAppTimeTo: customerAppTimeTo)
+
+      stop += 20
     end
-
-
-
+    
     rateConfData = RateConfData.new(
       customer:customer,
       notificationEmail: notificationEmail,
