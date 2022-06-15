@@ -7,7 +7,7 @@ class CreateQueries < ActiveRecord::Migration[7.0]
       t.string :awsS3name
       t.string :status
       t.string :enquirer
-      self.primary_key = "queryId"
+      #self.primary_key = 'queryId'
       t.timestamps
     end
   end

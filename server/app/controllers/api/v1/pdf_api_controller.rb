@@ -4,13 +4,16 @@ require 'securerandom'
 
 class Api::V1::PdfApiController < ApplicationController
     # #http://localhost:3000/pdf_api/
+    protect_from_forgery with: :null_session
+
     def create
       begin
         queryUUID = SecureRandom.uuid
-        @query = Query.new(queryId:queryUUID, status:"started")
+        @query = Query.new(queryId: queryUUID, status:"started")
         @query.save
 
         #separate pdf analysis into separate thread
+
         Thread.new do
           PdfQueryService.new.startNewPdfAnalysis(@query.id, params[:pdfBase64], params[:company])
         end

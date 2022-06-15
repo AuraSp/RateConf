@@ -3,11 +3,12 @@ require "rmagick"
 require "chilkat"
 
 class PdfService
-  def decodePdfFromB64(b64)
-    File.open("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/test3.pdf", "wb") do |f|
+  def decodePdfFromB64(b64, queryId)
+    tempFilePath = "/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/tempfiles/#{queryId}.pdf"
+    File.open(tempFilePath, "wb") do |f|
       f.write(Base64.decode64(b64))
     end
-    tempFilePath = "/home/rytis/Documents/GitHub/rateconfocr/server/app/services/test3.pdf"
+    
     return tempFilePath
   end
 

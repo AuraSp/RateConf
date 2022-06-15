@@ -7,7 +7,7 @@ class AwsService
         false
     end
 
-    def uploadToS3(fileID, pdfBase64=nil)
+    def uploadToS3(path, fileID, pdfBase64=nil)
         #creating aws client for S3 service
         s3 = Aws::S3::Resource.new(
                 access_key_id: Rails.application.credentials.aws.access_key_id,
@@ -15,13 +15,12 @@ class AwsService
                 region: Rails.application.credentials.aws.region
             )
         
-        path = "/home/rytis/Documents/GitHub/rateconfocr/server/app/services/test3.pdf" #path to file to upload
         bucket_name = 'team3-pdfers-rateconfocr-bucket' #always remains the same
-        #object_key = File.basename([*'a'..'z', *0..9, *'A'..'Z'].shuffle[0..10].join + ".pdf") #randomly makes the file name
-        object_key = File.basename(fileID + ".pdf")
+        object_key = File.basename(fileID.to_s + ".pdf")
 
         if object_uploaded?(s3, bucket_name, object_key, path)
             puts "Object '#{object_key}' uploaded to bucket - '#{bucket_name}'."
+            PdfService.new.deleteTempPdf(path)
             return object_key
         else
             puts "Object '#{object_key}' not uploaded to bucket - '#{bucket_name}'."
