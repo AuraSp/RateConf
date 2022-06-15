@@ -4,7 +4,7 @@ require "chilkat"
 
 class PdfService
   def decodePdfFromB64(b64, queryId)
-    tempFilePath = "/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/tempfiles/#{queryId}.pdf"
+    tempFilePath = "//home/rytis/Documents/GitHub/rateconfocr/server/app/temp/#{queryId}.pdf"
     File.open(tempFilePath, "wb") do |f|
       f.write(Base64.decode64(b64))
     end
