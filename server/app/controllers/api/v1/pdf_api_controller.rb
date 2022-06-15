@@ -9,7 +9,7 @@ class Api::V1::PdfApiController < ApplicationController
     def create
       begin
         queryUUID = SecureRandom.uuid
-        @query = Query.new(id: queryUUID, status:"started")
+        @query = Query.new(queryId: queryUUID, status:"started")
         @query.save
 
         #separate pdf analysis into separate thread
