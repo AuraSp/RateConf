@@ -1,4 +1,5 @@
 require "aws-sdk"
+require 'json'
 
 class ExtractorService  
   PdfField = Struct.new(:value, :x, :y, :width, :height)
@@ -19,7 +20,7 @@ class ExtractorService
     when "kenco"
       extractData_kenco(responseBlocks)
     when "rjw"
-      extractData_rjw(responseBlocks)
+      extractData_rjw()
     else
       raise RuntimeError, "You messed up!"
     end
@@ -31,7 +32,7 @@ class ExtractorService
     #hash set
     keyValuePairs = DataExtractorService.new.extractKeyValuePairs(awsBlocks)
 
-    #array of 2d arrays(tables)
+    #pdfData of 2d pdfDatas(tables)
     tableData = DataExtractorService.new.extractKeyTableData(awsBlocks)
 
     #extracted data
@@ -88,7 +89,79 @@ class ExtractorService
     
   end
 
-  def extractData_rjw(awsBlocks)
-    puts extractKeyValuePairs(awsBlocks)
+  def extractData_rjw()
+    #puts DataExtractorService.new.extractKeyValuePairs(awsBlocks)
+    #awsBlocks.each { |x| puts x.text}
+    #File.open("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json", "w") do |f|
+      #f.write(awsBlocks.to_json)
+    #end
+
+    awsBlocks = File.read('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json')
+    responseBlocks = JSON.parse(awsBlocks, object_class: OpenStruct)
+    blocks = responseBlocks.select { |b| b.block_type == "LINE"}
+
+    pdfData = []
+    blocks.each do |block|
+      pdfData.push(block.text)
+    end
+
+
+    customer = "Rjw"
+    notificationEmail = pdfData[11].split.last
+    customerLoad = pdfData[9] 
+    linehaulRate = pdfData[55].split.last.tr('$', '')
+    weight = pdfData[56].split.last
+    fuelSurcharge = nil
+    
+    #pickup data
+    stopType = "Pick Up"
+    companyName = pdfData[70]
+    address = pdfData[74]
+    customerAppTimeFrom = pdfData[72].insert(13, ':')
+    customerAppTimeTo = pdfData[75].insert(13, ':')
+
+    pickUpStopData = RateConfStopData.new(
+      stopType: stopType, 
+      companyName: companyName, 
+      address: address,
+      customerAppTimeFrom: customerAppTimeFrom, 
+      customerAppTimeTo: customerAppTimeTo)
+
+    #stop data
+    stopCompany = 87
+    stopAddress = 91
+    stopFrom = 89
+    stopTo = 92
+
+    stopType = "Delivery"
+    companyName = pdfData[stopCompany]
+    address = pdfData[stopAddress]
+    customerAppTimeFrom = pdfData[stopFrom].insert(13, ':')
+    customerAppTimeTo = pdfData[stopTo].insert(13, ':')
+
+    deliveryStopData = RateConfStopData.new(
+      stopType: stopType, 
+      companyName: companyName, 
+      address: address,
+      customerAppTimeFrom: customerAppTimeFrom, 
+      customerAppTimeTo: customerAppTimeTo)
+
+    if(pdfData[105].include? "so")
+      puts "ahaaa"
+      #stopCompany += 
+      #implement if there are any other stops
+    end
+
+
+
+    rateConfData = RateConfData.new(
+      customer:customer,
+      notificationEmail: notificationEmail,
+      customerLoad: customerLoad,
+      linehaulRate: linehaulRate,
+      fuelSurcharge: fuelSurcharge,
+      weight: weight,
+      stopData: [pickUpStopData, deliveryStopData]
+    )
   end
 end
