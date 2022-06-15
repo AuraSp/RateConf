@@ -20,7 +20,7 @@ class ExtractorService
     when "kenco"
       extractData_kenco(responseBlocks)
     when "rjw"
-      extractData_rjw()
+      extractData_rjw(responseBlocks)
     else
       raise RuntimeError, "You messed up!"
     end
@@ -89,15 +89,9 @@ class ExtractorService
     
   end
 
-  def extractData_rjw()
-    #puts DataExtractorService.new.extractKeyValuePairs(awsBlocks)
-    #awsBlocks.each { |x| puts x.text}
-    #File.open("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json", "w") do |f|
-      #f.write(awsBlocks.to_json)
-    #end
-
-    awsBlocks = File.read('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json')
-    responseBlocks = JSON.parse(awsBlocks, object_class: OpenStruct)
+  def extractData_rjw(responseBlocks)
+    #awsBlocks = File.read('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json')
+    #responseBlocks = JSON.parse(awsBlocks, object_class: OpenStruct)
     blocks = responseBlocks.select { |b| b.block_type == "LINE"}
 
     pdfData = []
@@ -147,11 +141,10 @@ class ExtractorService
       customerAppTimeTo: customerAppTimeTo)
 
 
-    #if there are any more stops
+    #if there are any more stops // +20 for each stop
     stop = 85
 
     while pdfData[stop+20].include? "so"
-      puts "Aaaaaa"
       stopCompany += 20
       stopAddress += 20
       stopFrom += 20
