@@ -8,14 +8,12 @@ Rails.application.routes.draw do
           get "view" do
           end
         end
-        # resources :audit, only: [:show, :update, :create]
-          # resources :audit_logs
-
-        # resources :queries, only: [:show, :create] do
-        #   resources :audits do
-        #     resources :audit_logs
-        #   end
-        # end
+      end
+      # stebejimui
+      resources :queries do
+        resources :audit do
+          resources :logs
+        end
       end
     end
   end

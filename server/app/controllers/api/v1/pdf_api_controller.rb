@@ -25,7 +25,7 @@ class Api::V1::PdfApiController < ApplicationController
   def index
     begin
       #render json: { query: params[:id]}, status: :ok
-      render json: { query: Query.where(query_id: params[:id]), data: Audit.all }, status: :ok
+      render json: { query_id: Query.where(query_id: params[:id]) }, status: :ok
     rescue Exception => ex
       render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
     ensure
