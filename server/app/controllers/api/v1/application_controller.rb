@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   TOKEN = "Test"
 
   # before_action :authenticate
-  # protect_from_forgery with: :null_session
+  protect_from_forgery with: :null_session
 
   # private
 
@@ -13,10 +13,4 @@ class ApplicationController < ActionController::Base
   #   end
   # end
 
-  # FOR BASIC AUTHENTICATION
-  # def authenticate()
-  #   authenticate_or_request_with_http_basic do |username, password|
-  #     username == "username" && password == "password"
-  #   end
-  # end
 end

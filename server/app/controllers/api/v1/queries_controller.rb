@@ -2,7 +2,7 @@
 class Api::V1::QueriesController < ApplicationController
   def index
     @query = Query.all
-    render json: @query.as_json(include: { :audit => { :include => [:logs] } })
+    render json: @query, include: [:audit => { :include => [:logs] }]
   end
 
   def create
