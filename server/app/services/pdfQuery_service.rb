@@ -1,3 +1,4 @@
+#replaced by analyze_pdf_job
 require "securerandom"
 
 class PdfQueryService
