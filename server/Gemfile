@@ -57,7 +57,9 @@ gem 'rufo'
 gem "letter_opener", group: :development
 gem 'rmagick'
 gem 'chilkat'
-
+gem 'redis'
+gem 'sidekiq'
+gem 'foreman', '~> 0.87.2'
 # Use Sass to process CSS
 # gem "sassc-rails"
 

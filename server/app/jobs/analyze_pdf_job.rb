@@ -1,8 +1,7 @@
-#replaced by analyze_pdf_job
-require "securerandom"
+class AnalyzePdfJob < ApplicationJob
+  queue_as :default
 
-class PdfQueryService
-  def startNewPdfAnalysis(queryUUID, base64Pdf, company)
+  def perform(queryUUID, base64Pdf, company)
     @query = Query.find(queryUUID)
     @query.update(status: "processing")
     #decode uploaded pdf file
@@ -30,12 +29,12 @@ class PdfQueryService
 
       if response.job_status == "SUCCEEDED"
         extractedData = ExtractorService.new.extractData(company, response.blocks)
-        @query.update(status: "finished", rate_conf_data: extractedData)
+        @query.update(status: "finished", rateConfData: extractedData)
         @query.save
         break
       end
       if response.job_status == "FAILED"
-        @query.update(status: "failed", rate_conf_data: extractedData)
+        @query.update(status: "failed", rateConfData: extractedData)
         @query.save
         break
       end

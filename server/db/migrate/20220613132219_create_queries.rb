@@ -7,7 +7,7 @@ class CreateQueries < ActiveRecord::Migration[7.0]
       t.string :aws_s3_name
       t.string :status
       t.string :enquirer
-
+      
       t.timestamps
     end
   end

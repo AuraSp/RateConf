@@ -1334,6 +1334,7 @@ GEM
     childprocess (4.1.0)
     chilkat (9.5.0.90-x86_64-linux)
     concurrent-ruby (1.1.10)
+    connection_pool (2.2.5)
     crass (1.0.6)
     date (3.2.2)
     debug (1.5.0)
@@ -1345,6 +1346,7 @@ GEM
       dotenv (= 2.7.6)
       railties (>= 3.2)
     erubi (1.10.0)
+    foreman (0.87.2)
     globalid (1.0.0)
       activesupport (>= 5.0)
     i18n (1.10.0)
@@ -1431,6 +1433,7 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
+    redis (4.6.0)
     regexp_parser (2.5.0)
     reline (0.3.1)
       io-console (~> 0.5)
@@ -1443,6 +1446,10 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    sidekiq (6.5.0)
+      connection_pool (>= 2.2.2)
+      rack (~> 2.0)
+      redis (>= 4.2.0)
     sprockets (4.0.3)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -1495,6 +1502,7 @@ DEPENDENCIES
   chilkat
   debug
   dotenv-rails
+  foreman (~> 0.87.2)
   importmap-rails
   jbuilder
   letter_opener
@@ -1502,9 +1510,11 @@ DEPENDENCIES
   puma (~> 5.0)
   rack-cors
   rails (~> 7.0.3)
+  redis
   rmagick
   rufo
   selenium-webdriver
+  sidekiq
   sprockets-rails
   sqlite3 (~> 1.4)
   stimulus-rails
