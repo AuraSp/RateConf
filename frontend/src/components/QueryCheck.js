@@ -35,28 +35,29 @@ const QueryCheck = () => {
   };
 
   const updateData = () => {
-    if(response.length !== 0) {
-      if(response.query[0].status === "finished") {
-        //console.log("finished!!!! :)))))))");
-        const stringData = response.query[0].rateConfData;
-        var requiredData = stringData.match(/"([^']+)"/)[0];
-        var reg = /"(.*?)"/i;
-        var allData = [];
-        //15
-        for(let i = 0; i < 15; i++) {
-          allData.push(requiredData.match(reg)[1]);
-          requiredData = requiredData.replace(requiredData.match(reg)[0], '')
-        }
-        //console.log(allData)
-        document.getElementById("jobStatus").innerHTML = "Job is finished."
-        document.getElementById("responseData").innerHTML = allData;
-      }
-      else if(response.query[0].status === "processing") {
-        console.log("The Document is still being processed");
-        document.getElementById("jobStatus").innerHTML = "The Document is still being processed."
-      }
+     if(response.length !== 0) {
+    //   if(response.query[0].status === "finished") {
+    //     //console.log("finished!!!! :)))))))");
+    //     const stringData = response.query[0].rateConfData;
+    //     var requiredData = stringData.match(/"([^']+)"/)[0];
+    //     var reg = /"(.*?)"/i;
+    //     var allData = [];
+    //     //15
+    //     for(let i = 0; i < 15; i++) {
+    //       allData.push(requiredData.match(reg)[1]);
+    //       requiredData = requiredData.replace(requiredData.match(reg)[0], '')
+    //     }
+    //     //console.log(allData)
+    //     document.getElementById("jobStatus").innerHTML = "Job is finished."
+    //     document.getElementById("responseData").innerHTML = allData;
+    //   }
+    //   else if(response.query[0].status === "processing") {
+    //     console.log("The Document is still being processed");
+    //     document.getElementById("jobStatus").innerHTML = "The Document is still being processed."
+    //   }
+      document.getElementById("responseData").innerHTML = response.query[0];
+     //console.log(response.query[0].rate_conf_data)
     }
-    
   }
 
   useEffect(() => {

@@ -6,7 +6,7 @@ class Api::V1::QueriesController < ApplicationController
   end
 
   def create
-    @query = query.new()
+    @query = Query.create()
   end
 
   private
