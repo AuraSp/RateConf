@@ -11,8 +11,8 @@ class Api::V1::PdfApiController < ApplicationController
       queryUUID = SecureRandom.uuid
       @query = Query.new(query_id: queryUUID, status: "started")
       @query.save
-      @audit = Query.last
-      @audit.build_audit(process_status: "Start")
+      # @audit = Query.last
+      @audit = @query.build_audit(process_status: "Start")
       @audit.save
 
       #separate pdf analysis into separate thread
@@ -37,8 +37,10 @@ class Api::V1::PdfApiController < ApplicationController
   def index
     begin
       render json: { query: Query.where(query_id: params[:id]) }, status: :ok
+      ContactMailer.analyzedData().deliver_later
     rescue Exception => ex
       render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
+      ContactMailer.analyzedData_null().deliver_later
     ensure
     end
   end

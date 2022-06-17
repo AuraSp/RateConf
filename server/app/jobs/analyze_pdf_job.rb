@@ -11,7 +11,7 @@ class AnalyzePdfJob < ApplicationJob
     #request s3 to analyze the file
     uploadData = AwsService.new.uploadToS3(tempPath, @query.id)
     Audit.last.logs.create(text: 'requesting for analyzing the file')
-    @query.update(awsS3name: uploadData)
+    @query.update(aws_s3_name: uploadData)
     #receive jobID to access textract service data
     Audit.last.logs.create(text: 'getting jobId to access textract service')
     jobID = AwsService.new.awsTextract(uploadData)
@@ -34,13 +34,13 @@ class AnalyzePdfJob < ApplicationJob
 
       if response.job_status == "SUCCEEDED"
         extractedData = ExtractorService.new.extractData(company, response.blocks)
-        @query.update(status: "finished", rateConfData: extractedData)
+        @query.update(status: "finished", rate_conf_data: extractedData)
         @query.save
         Audit.last.logs.create(text: 'extracted data taken successfully')
         break
       end
       if response.job_status == "FAILED"
-        @query.update(status: "failed", rateConfData: extractedData)
+        @query.update(status: "failed", rate_conf_data: extractedData)
         @query.save
         Audit.last.logs.create(text: 'extracted data taking failed')
         @audit.build_audit.update(process_status: "Process failed")
