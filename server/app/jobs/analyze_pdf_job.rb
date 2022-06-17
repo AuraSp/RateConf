@@ -1,8 +1,7 @@
-#replaced by analyze_pdf_job
-require "securerandom"
+class AnalyzePdfJob < ApplicationJob
+  queue_as :default
 
-class PdfQueryService
-  def startNewPdfAnalysis(queryUUID, base64Pdf, company)
+  def perform(queryUUID, base64Pdf, company)
     @query = Query.find(queryUUID)
     @query.update(status: "processing")
     #decode uploaded pdf file

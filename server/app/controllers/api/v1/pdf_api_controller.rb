@@ -14,9 +14,12 @@ class Api::V1::PdfApiController < ApplicationController
 
         #separate pdf analysis into separate thread
 
-        Thread.new do
-          PdfQueryService.new.startNewPdfAnalysis(@query.id, params[:pdfBase64], params[:company])
-        end
+        #Thread.new do
+        #  PdfQueryService.new.startNewPdfAnalysis(@query.id, params[:pdfBase64], params[:company])
+        #end
+
+        AnalyzePdfJob.perform_later(@query.id, params[:pdfBase64], params[:company])
+
         #return query ID
         render json: { queryUUID: queryUUID}, status: :ok
       rescue Exception => ex
