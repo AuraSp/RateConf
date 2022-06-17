@@ -6,7 +6,7 @@ class AnalyzePdfJob < ApplicationJob
     @query.update(status: "processing")
     Audit.last.logs.create(text: "start processing")
     #decode uploaded pdf file
-    tempPath = PdfService.new.decodePdfFromB64(base64Pdf, @query.id)
+    tempPath = PdfService.new.decodePdfFromB64(base64Pdf, @query.queryId)
     Audit.last.logs.create(text: "decoding uploaded pdf file")
     #request s3 to analyze the file
     uploadData = AwsService.new.uploadToS3(tempPath, @query.id)

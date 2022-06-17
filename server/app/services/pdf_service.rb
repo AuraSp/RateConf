@@ -3,8 +3,9 @@ require "rmagick"
 require "chilkat"
 
 class PdfService
-  def decodePdfFromB64(b64, query_id)
-    tempFilePath = "/home/ubuntu/Desktop/rateconfocr/server/app/temp/#{query_id}.pdf"
+
+  def decodePdfFromB64(b64, queryId)
+    tempFilePath = "/tmp/#{queryId}.pdf"
     File.open(tempFilePath, "wb") do |f|
       f.write(Base64.decode64(b64))
       Audit.first.logs.create(text: "decoding pdf from B64")
