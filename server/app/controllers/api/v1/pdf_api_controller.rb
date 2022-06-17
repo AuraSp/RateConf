@@ -11,23 +11,15 @@ class Api::V1::PdfApiController < ApplicationController
       queryUUID = SecureRandom.uuid
       @query = Query.new(query_id: queryUUID, status: "started")
       @query.save
-      @audit = @query.build_audit()
-      @audit.save
 
-      #separate pdf analysis into separate thread
-
-      #Thread.new do
-      #  PdfQueryService.new.startNewPdfAnalysis(@query.id, params[:pdfBase64], params[:company])
-      #end
-
+      #separate pdf analysis into separate job
       AnalyzePdfJob.perform_later(@query.id, params[:pdfBase64], params[:company])
 
       #return query ID
       render json: { queryUUID: queryUUID }, status: :ok
-      Audit.last.logs.create(text: "QueryId response true")
+
     rescue Exception => ex
       render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
-      Audit.last.logs.create(text: "QueryId response failed")
     ensure
     end
   end
