@@ -5,9 +5,9 @@ class AnalyzePdfJob < ApplicationJob
     @query = Query.find(queryUUID)
     @query.update(status: "processing")
     #decode uploaded pdf file
-    tempPath = PdfService.new.decodePdfFromB64(base64Pdf, @query.id)
+    tempPath = PdfService.new.decodePdfFromB64(base64Pdf, @query.queryId)
     #request s3 to analyze the file
-    uploadData = AwsService.new.uploadToS3(tempPath, @query.id)
+    uploadData = AwsService.new.uploadToS3(tempPath, @query.queryId)
     @query.update(awsS3name: uploadData)
     #receive jobID to access textract service data
     jobID = AwsService.new.awsTextract(uploadData)
