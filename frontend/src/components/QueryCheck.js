@@ -5,7 +5,7 @@ import axios from "axios";
 const QueryCheck = () => {
   const [queryId, setQueryId] = useState('');
   const [response, setResponse] = useState([]);
-  const [data, setData] = useState();
+  let [data, setData] = useState();
 
   const handleChangeQuery = event => {
     setQueryId(event.target.value);
@@ -49,7 +49,7 @@ const QueryCheck = () => {
           requiredData = requiredData.replace(requiredData.match(reg)[0], '')
         }
         //console.log(allData)
-        console.log("JOb is finished");
+        console.log("Job is finished");
         document.getElementById("jobStatus").innerHTML = "Job is finished."
         setData(response.query[0])
       }
