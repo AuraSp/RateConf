@@ -18,12 +18,13 @@ const QueryCheck = () => {
 
     console.log(data);
 
-    const url = 'http://localhost:3000/api/v1/pdf_api' + '?id=' + queryId; 
+    const url = 'http://localhost:5000/api/v1/pdf_api' + '?id=' + queryId; 
 
     axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Token Test',
+        'Access-Control-Allow-Origin': "*",
       }
     }).then((res) => {
       setResponse(res.data);

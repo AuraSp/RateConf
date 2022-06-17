@@ -20,10 +20,11 @@ const Input = () => {
         pdfBase64: base64x,
         company: company
     })
-    axios.post('http://localhost:3000/api/v1/pdf_api', data, {
+    axios.post('http://localhost:5000/api/v1/pdf_api', data, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Token Test',
+            'Access-Control-Allow-Origin': "*",
         }
     }).then((res) => {
         console.log(res.data.queryUUID);
