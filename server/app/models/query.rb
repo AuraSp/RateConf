@@ -1,3 +1,3 @@
 class Query < ApplicationRecord
-    #self.primary_key = 'queryId'
+  has_one :audit
 end
