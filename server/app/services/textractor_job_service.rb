@@ -26,14 +26,12 @@ class TextractorJobService
     if response.job_status == "FAILED"
       puts "Document analysis failed"
       Audit.last.logs.create(text: "extraction failed")
-      @audit.build_audit.update(process_status: "Process failed")
       exit
     end
 
     if response.job_status == "PARTIAL_SUCCESS"
       puts "Something went wrong, try again"
       Audit.last.logs.create(text: "extraction failed on progress")
-      @audit.build_audit.update(process_status: "Process failed")
       exit
     end
   end

@@ -17,7 +17,6 @@ class PdfService
     if (!File.file?(path))
       print "failed to load PDF file."
       Audit.last.logs.create(text: "failed to encode pdf to B64")
-      @audit.build_audit.update(process_status: "Process failed")
       exit
     end
 

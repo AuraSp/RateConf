@@ -27,7 +27,6 @@ class AwsService
     else
       puts "Object '#{object_key}' not uploaded to bucket - '#{bucket_name}'."
       Audit.last.logs.create(text: "upload to bucket failed")
-      @audit.build_audit.update(process_status: "Process failed")
     end
   end
 
