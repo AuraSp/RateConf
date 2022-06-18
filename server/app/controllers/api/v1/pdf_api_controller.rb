@@ -6,6 +6,7 @@ class Api::V1::PdfApiController < ApplicationController
   # #http://localhost:3000/pdf_api/
   protect_from_forgery with: :null_session
 
+
   def create
     begin
       queryUUID = SecureRandom.uuid
