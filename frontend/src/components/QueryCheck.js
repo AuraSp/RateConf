@@ -5,7 +5,7 @@ import axios from "axios";
 const QueryCheck = () => {
   const [queryId, setQueryId] = useState('');
   const [response, setResponse] = useState([]);
-  let [data, setData] = useState();
+  const [load, setLoad] = useState(true);
 
   const handleChangeQuery = event => {
     setQueryId(event.target.value);
@@ -51,12 +51,11 @@ const QueryCheck = () => {
         //console.log(allData)
         console.log("Job is finished");
         document.getElementById("jobStatus").innerHTML = "Job is finished."
-        setData(response.query[0])
+        setLoad(false);
       }
       else if (response.query[0].status === "processing") {
         console.log("The Document is still being processed");
         document.getElementById("jobStatus").innerHTML = "The Document is still being processed."
-        setData(response.query[0])
       }
     }
   }
@@ -65,7 +64,7 @@ const QueryCheck = () => {
     updateData();
   }, [response])
 
-  console.log(data)
+  console.log(updateData)
 
   return (
     <div>
@@ -79,7 +78,9 @@ const QueryCheck = () => {
         </form>
         <div>
           <h3 id='jobStatus'></h3>
-          <p>{JSON.stringify(data.rate_conf_data)}</p>
+          {!load &&
+          <p>{JSON.stringify(response.query[0].rate_conf_data)}</p> 
+        }
         </div>
       </div>
     </div>
