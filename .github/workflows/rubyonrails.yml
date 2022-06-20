@@ -34,7 +34,9 @@ jobs:
         with:
           ruby-version: '3.1.0'
       - name: Gems
-        run: bundle install
+        run: |
+          cd server
+          bundle install
       # Add or replace database setup steps here
       - name: Set up database schema
         run: bin/rails db:schema:load
