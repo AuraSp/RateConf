@@ -1,7 +1,8 @@
 class ContactMailer < ApplicationMailer
-  def authorization_successful()
-    mail(to: Rails.application.credentials.dig(:aws, :admin_email), subject: "Access Granted")
-  end
+
+  # def authorization_successful()
+  #   mail(to: Rails.application.credentials.dig(:aws, :admin_email), subject: "Access Granted")
+  # end
 
   # def pdf_null()
   #   mail(to: Rails.application.credentials.config.dig(:aws, :admin_email), subject: "Pdf=null")
@@ -13,11 +14,12 @@ class ContactMailer < ApplicationMailer
   #   mail(to: Rails.application.credentials.config.dig(:admin_email), subject: "PdfInDB=-1")
   # end
 
-  def analyzedData()
+  def analyzedData(e)
     mail(to: Rails.application.credentials.config.dig(:aws, :admin_email), subject: "Analization status")
   end
 
-  def analyzedData_null()
+  def analyzedData_null(e)
+    @e = e.logs
     mail(to: Rails.application.credentials.config.dig(:aws, :admin_email), subject: "Analization=null")
   end
 end

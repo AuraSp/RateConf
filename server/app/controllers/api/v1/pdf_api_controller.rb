@@ -6,7 +6,6 @@ class Api::V1::PdfApiController < ApplicationController
   # #http://localhost:3000/pdf_api/
   protect_from_forgery with: :null_session
 
-
   def create
     begin
       queryUUID = SecureRandom.uuid
@@ -18,7 +17,6 @@ class Api::V1::PdfApiController < ApplicationController
 
       #return query ID
       render json: { queryUUID: queryUUID }, status: :ok
-
     rescue Exception => ex
       render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
     ensure
@@ -28,10 +26,8 @@ class Api::V1::PdfApiController < ApplicationController
   def index
     begin
       render json: { query: Query.where(query_id: params[:id]) }, status: :ok
-      #ContactMailer.analyzedData().deliver_later
     rescue Exception => ex
       render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
-      #ContactMailer.analyzedData_null().deliver_later
     ensure
     end
   end

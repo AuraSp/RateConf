@@ -47,6 +47,8 @@ class AnalyzePdfJob < ApplicationJob
         @lastlog = @query.audit.logs.last
         @query.update(status: "finished", rate_conf_data: extractedData, error_data: @lastlog.text)
         @query.save
+        ContactMailer.analyzedData().deliver_later
+        ContactMailer.analyzedData_null(@audit).deliver_later
         break
       end
       if response.job_status == "FAILED"
@@ -54,6 +56,7 @@ class AnalyzePdfJob < ApplicationJob
         @lastlog = @query.audit.logs.last
         @query.update(status: "failed", rate_conf_data: extractedData)
         @query.save
+        ContactMailer.analyzedData_null(@audit).deliver_later
         break
       end
       sleep(2)

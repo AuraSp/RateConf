@@ -6,6 +6,7 @@ class Api::V1::QueriesController < ApplicationController
   def index
     @query = Query.all.page(page).per(per_page)
     render json: @query, include: [:audit => { :include => [:logs] }]
+
     set_pagination_headers(@query)
   end
 
@@ -22,5 +23,4 @@ class Api::V1::QueriesController < ApplicationController
   def query_params
     params.require(:query).permit(:body)
   end
-
 end
