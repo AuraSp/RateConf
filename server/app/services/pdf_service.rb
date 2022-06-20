@@ -8,7 +8,6 @@ class PdfService
     tempFilePath = "/tmp/#{queryId}.pdf"
     File.open(tempFilePath, "wb") do |f|
       f.write(Base64.decode64(b64))
-      Audit.first.logs.create(text: "decoding pdf from B64")
     end
 
     return tempFilePath
