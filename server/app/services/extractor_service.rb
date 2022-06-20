@@ -90,29 +90,58 @@ class ExtractorService
   end
 
   def extractData_rjw(responseBlocks)
+
+    #File.open('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json', 'w') do |f|
+      #f.write(responseBlocks.to_json)
+    #end
     #awsBlocks = File.read('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json')
     #responseBlocks = JSON.parse(awsBlocks, object_class: OpenStruct)
-    blocks = responseBlocks.select { |b| b.block_type == "LINE"}
 
-    pdfData = []
-    blocks.each do |block|
-      pdfData.push(block.text)
-    end
-
+    keyValuePairs = DataExtractorService.new.extractKeyValuePairs(responseBlocks)
+    tableData = DataExtractorService.new.extractKeyTableData(responseBlocks)
 
     customer = "Rjw"
-    notificationEmail = pdfData[11].split.last
-    customerLoad = pdfData[9] 
-    linehaulRate = pdfData[55].split.last.tr('$', '')
-    weight = pdfData[56].split.last
+    notificationEmail = keyValuePairs["Email: "]
+    customerLoad = keyValuePairs["Pieces \ Spots: "] 
+    linehaulRate = keyValuePairs["Total Carrier Pay: "]
     fuelSurcharge = nil
-    
+    weight = keyValuePairs["Weight (lbs): "]
+
+    key_map = {}
+    value_map = {}
+    block_map = {}
+    for block in responseBlocks
+      block_id = block.id
+      block_map[block_id] = block
+      if block.block_type == "KEY_VALUE_SET"
+        if block.entity_types[0] == "KEY"
+          key_map[block_id] = block
+        else
+          value_map[block_id] = block
+        end
+      end
+    end
+
+    rjwData = {}
+
+    key_map.each do |block_id, key_block|
+      value_block = DataExtractorService.new.find_value_block(key_block, value_map)
+      key = DataExtractorService.new.get_text(key_block, block_map)
+      val = DataExtractorService.new.get_text(value_block, block_map)
+      if rjwData.key?(key)
+        rjwData[key+"1"] = val
+      else
+        rjwData[key] = val
+      end
+    end
+      puts rjwData["Name: 1"]
+
     #pickup data
     stopType = "Pick Up"
-    companyName = pdfData[70]
-    address = pdfData[74]
-    customerAppTimeFrom = pdfData[72].insert(13, ':')
-    customerAppTimeTo = pdfData[75].insert(13, ':')
+    companyName = rjwData["Name: "]
+    address = rjwData["Address: "]
+    customerAppTimeFrom = rjwData["Date: "].split(" ")[0] + " " + rjwData["Date: "].split(" ")[1]
+    customerAppTimeTo = rjwData["Date: "].split(" ")[2] + " " + rjwData["Date: "].split(" ")[3]
 
     pickUpStopData = RateConfStopData.new(
       stopType: stopType, 
@@ -122,16 +151,11 @@ class ExtractorService
       customerAppTimeTo: customerAppTimeTo)
 
     #stop data
-    stopCompany = 87
-    stopAddress = 91
-    stopFrom = 89
-    stopTo = 92
-
-    stopType = "Delivery"
-    companyName = pdfData[stopCompany]
-    address = pdfData[stopAddress]
-    customerAppTimeFrom = pdfData[stopFrom].insert(13, ':')
-    customerAppTimeTo = pdfData[stopTo].insert(13, ':')
+    stopType = "Stop"
+    companyName = rjwData["Name: 1"]
+    address = rjwData["Address: 1"]
+    customerAppTimeFrom = rjwData["Date: 1"].split(" ")[0] + " " + rjwData["Date: 1"].split(" ")[1]
+    customerAppTimeTo = rjwData["Date: 1"].split(" ")[2] + " " + rjwData["Date: 1"].split(" ")[3]
 
     deliveryStopData = RateConfStopData.new(
       stopType: stopType, 
@@ -140,32 +164,6 @@ class ExtractorService
       customerAppTimeFrom: customerAppTimeFrom, 
       customerAppTimeTo: customerAppTimeTo)
 
-
-    #if there are any more stops // +20 for each stop
-    stop = 85
-
-    while pdfData[stop+20].include? "so"
-      stopCompany += 20
-      stopAddress += 20
-      stopFrom += 20
-      stopTo += 20
-
-      stopType = "Delivery"
-      companyName = pdfData[stopCompany]
-      address = pdfData[stopAddress]
-      customerAppTimeFrom = pdfData[stopFrom].insert(13, ':')
-      customerAppTimeTo = pdfData[stopTo].insert(13, ':')
-
-      deliveryStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
-      address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
-
-      stop += 20
-    end
-    
     rateConfData = RateConfData.new(
       customer:customer,
       notificationEmail: notificationEmail,
@@ -174,6 +172,6 @@ class ExtractorService
       fuelSurcharge: fuelSurcharge,
       weight: weight,
       stopData: [pickUpStopData, deliveryStopData]
-    )
+    ) 
   end
 end

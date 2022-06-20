@@ -103,4 +103,41 @@ class DataExtractorService
       return ""
     end
   end
+
+  def find_value_block(key_block, value_map)
+    for relationship in key_block.relationships
+      if relationship.type == 'VALUE'
+        for value_id in relationship.ids
+          value_block = value_map[value_id]
+        end
+      end
+    end
+    return value_block
+  end
+
+  def get_text(result, blocks_map)
+    text = ''
+    a = result.relationships
+    if a.nil?
+      return "nil"
+    end
+    if 'Relationships' in result
+      for relationship in a
+        if relationship.type == 'CHILD'
+          for child_id in relationship.ids
+            word = blocks_map[child_id]
+            if word.block_type == 'WORD'
+              text += word.text + ' '
+            end
+            if word.block_type == 'SELECTION_ELEMENT'
+              if word.selection_status == 'SELECTED'
+                text += 'X '
+              end
+            end
+          end
+        end
+      end
+    end
+    return text
+  end
 end
