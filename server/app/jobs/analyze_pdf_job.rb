@@ -13,6 +13,7 @@ class AnalyzePdfJob < ApplicationJob
     #decode uploaded pdf file
     tempPath = PdfService.new.decodePdfFromB64(base64Pdf, @query.query_id)
     @audit.logs.create(text: "decoding uploaded pdf file")
+    Audit.first.logs.create(text: "decoding pdf from B64")
 
     #request s3 to analyze the file
     uploadData = AwsService.new.uploadToS3(tempPath, @query.query_id)
