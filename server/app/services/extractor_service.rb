@@ -90,26 +90,10 @@ class ExtractorService
   end
 
   def extractData_rjw(responseBlocks)
-
-    #File.open('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json', 'w') do |f|
-      #f.write(responseBlocks.to_json)
-    #end
-    #awsBlocks = File.read('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json')
-    #responseBlocks = JSON.parse(awsBlocks, object_class: OpenStruct)
-
-    keyValuePairs = DataExtractorService.new.extractKeyValuePairs(responseBlocks)
-    tableData = DataExtractorService.new.extractKeyTableData(responseBlocks)
-
-    customer = "Rjw"
-    notificationEmail = keyValuePairs["Email: "]
-    customerLoad = keyValuePairs["Pieces \ Spots: "] 
-    linehaulRate = keyValuePairs["Total Carrier Pay: "]
-    fuelSurcharge = nil
-    weight = keyValuePairs["Weight (lbs): "]
-
     key_map = {}
     value_map = {}
     block_map = {}
+    
     for block in responseBlocks
       block_id = block.id
       block_map[block_id] = block
@@ -125,16 +109,22 @@ class ExtractorService
     rjwData = {}
 
     key_map.each do |block_id, key_block|
-      value_block = DataExtractorService.new.find_value_block(key_block, value_map)
-      key = DataExtractorService.new.get_text(key_block, block_map)
-      val = DataExtractorService.new.get_text(value_block, block_map)
+      value_block = DataExtractorService.new.findValueBlockRjw(key_block, value_map)
+      key = DataExtractorService.new.getTextRjw(key_block, block_map)
+      val = DataExtractorService.new.getTextRjw(value_block, block_map)
       if rjwData.key?(key)
         rjwData[key+"1"] = val
       else
         rjwData[key] = val
       end
     end
-      puts rjwData["Name: 1"]
+
+    customer = "Rjw"
+    notificationEmail = rjwData["Email: "]
+    customerLoad = rjwData["Pieces \ Spots: "] 
+    linehaulRate = rjwData["Total Carrier Pay: "]
+    fuelSurcharge = nil
+    weight = rjwData["Weight (lbs): "]
 
     #pickup data
     stopType = "Pick Up"

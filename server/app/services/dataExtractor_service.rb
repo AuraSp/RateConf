@@ -104,7 +104,7 @@ class DataExtractorService
     end
   end
 
-  def find_value_block(key_block, value_map)
+  def findValueBlockRjw(key_block, value_map)
     for relationship in key_block.relationships
       if relationship.type == 'VALUE'
         for value_id in relationship.ids
@@ -115,7 +115,7 @@ class DataExtractorService
     return value_block
   end
 
-  def get_text(result, blocks_map)
+  def getTextRjw(result, blocks_map)
     text = ''
     a = result.relationships
     if a.nil?
