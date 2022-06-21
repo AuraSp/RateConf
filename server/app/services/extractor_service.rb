@@ -93,7 +93,7 @@ class ExtractorService
     key_map = {}
     value_map = {}
     block_map = {}
-    
+
     for block in responseBlocks
       block_id = block.id
       block_map[block_id] = block
@@ -130,8 +130,13 @@ class ExtractorService
     stopType = "Pick Up"
     companyName = rjwData["Name: "]
     address = rjwData["Address: "]
-    customerAppTimeFrom = rjwData["Date: "].split(" ")[0] + " " + rjwData["Date: "].split(" ")[1]
-    customerAppTimeTo = rjwData["Date: "].split(" ")[2] + " " + rjwData["Date: "].split(" ")[3]
+    if rjwData["Date: "].nil? == false
+      customerAppTimeFrom = rjwData["Date: "].split(" ")[0] + " " + rjwData["Date: "].split(" ")[1]
+      customerAppTimeTo = rjwData["Date: "].split(" ")[2] + " " + rjwData["Date: "].split(" ")[3]
+    else
+      customerAppTimeFrom = nil
+      customerAppTimeTo = nil
+    end
 
     pickUpStopData = RateConfStopData.new(
       stopType: stopType, 
@@ -144,8 +149,13 @@ class ExtractorService
     stopType = "Stop"
     companyName = rjwData["Name: 1"]
     address = rjwData["Address: 1"]
-    customerAppTimeFrom = rjwData["Date: 1"].split(" ")[0] + " " + rjwData["Date: 1"].split(" ")[1]
-    customerAppTimeTo = rjwData["Date: 1"].split(" ")[2] + " " + rjwData["Date: 1"].split(" ")[3]
+    if rjwData["Date: 1"].nil? == false
+      customerAppTimeFrom = rjwData["Date: 1"].split(" ")[0] + " " + rjwData["Date: 1"].split(" ")[1]
+      customerAppTimeTo = rjwData["Date: 1"].split(" ")[2] + " " + rjwData["Date: 1"].split(" ")[3]
+    else
+      customerAppTimeFrom = nil
+      customerAppTimeTo = nil
+    end
 
     deliveryStopData = RateConfStopData.new(
       stopType: stopType, 
