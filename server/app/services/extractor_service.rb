@@ -94,7 +94,24 @@ class ExtractorService
     value_map = {}
     block_map = {}
 
+    keys_map = []
+    values_text = []
+
+    found = false
+
     for block in responseBlocks
+      temp_text = block.text
+      
+      if temp_text.nil? == false
+        if found == true
+          values_text.push(temp_text)
+          found = false
+        end
+        if temp_text["Name:"] || temp_text["Address:"] || temp_text["Date:"]
+          keys_map.push(temp_text)
+          found = true
+        end
+      end
       block_id = block.id
       block_map[block_id] = block
       if block.block_type == "KEY_VALUE_SET"
@@ -105,17 +122,18 @@ class ExtractorService
         end
       end
     end
-
     rjwData = {}
     keys = []
-    vals = []
+    values_map = []
+
+    #puts values_text
 
     key_map.each do |block_id, key_block|
       value_block = DataExtractorService.new.findValueBlockRjw(key_block, value_map)
       key = DataExtractorService.new.getTextRjw(key_block, block_map)
       val = DataExtractorService.new.getTextRjw(value_block, block_map)
       keys.push(key)
-      vals.push(val)
+      values_map.push(val)
       if rjwData.key?(key)
         rjwData[key+"1"] = val
         
@@ -126,23 +144,23 @@ class ExtractorService
 
     #main data
     customer = "Rjw"
-    notificationEmail = vals[keys.find_index('Email: ')]
-    customerLoad = vals[keys.find_index('Pieces \ Spots: ')] 
-    linehaulRate = vals[keys.find_index("Total Carrier Pay: ")]
+    notificationEmail = values_map[keys.find_index('Email: ')]
+    customerLoad = values_map[keys.find_index('Pieces \ Spots: ')] 
+    linehaulRate = values_map[keys.find_index("Total Carrier Pay: ")]
     fuelSurcharge = nil
-    weight = vals[keys.find_index("Weight (lbs): ")]
+    weight = values_map[keys.find_index("Weight (lbs): ")]
 
     #pickup data
-    indexName = keys.find_index('Name: ')
-    indexAddress = keys.find_index('Address: ')
-    indexDate = keys.find_index('Date: ')
+    indexName = keys_map.find_index("Name:")
+    indexAddress = keys_map.find_index("Address:")
+    indexDate = keys_map.find_index("Date:")
 
     stopType = "Pick Up"
-    companyName = vals[indexName]
-    address = vals[indexAddress]
-    if vals[indexDate].nil? == false
-      customerAppTimeFrom = vals[indexDate].split(" ")[0] + " " + vals[indexDate].split(" ")[1]
-      customerAppTimeTo = vals[indexDate].split(" ")[2] + " " + vals[indexDate].split(" ")[3]
+    companyName = values_text[indexName]
+    address = values_text[indexAddress]
+    if values_text[indexDate].nil? == false
+      customerAppTimeFrom = values_text[indexDate]
+      customerAppTimeTo = values_text[indexDate]
     else
       customerAppTimeFrom = nil
       customerAppTimeTo = nil
@@ -160,34 +178,44 @@ class ExtractorService
     keys.delete_at(indexAddress)
     keys.delete_at(indexDate)
 
-    vals.delete_at(indexName)
-    vals.delete_at(indexAddress)
-    vals.delete_at(indexDate)
+    values_text.delete_at(indexName)
+    values_text.delete_at(indexAddress)
+    values_text.delete_at(indexDate)
 
     #stop data
-    indexName = keys.find_index('Name: ')
-    indexAddress = keys.find_index('Address: ')
-    indexDate = keys.find_index('Date: ')
+    #while keys_map.include? "Name:"
+      indexName = keys_map.find_index("Name:")
+      indexAddress = keys_map.find_index("Address:")
+      indexDate = keys_map.find_index("Date:")
 
-    stopType = "Stop"
-    companyName = vals[indexName]
-    address = vals[indexAddress]
-    if vals[indexDate].nil? == false
-      customerAppTimeFrom = vals[indexDate].split(" ")[0] + " " + vals[indexDate].split(" ")[1]
-      customerAppTimeTo = vals[indexDate].split(" ")[2] + " " + vals[indexDate].split(" ")[3]
-    else
-      customerAppTimeFrom = nil
-      customerAppTimeTo = nil
-    end
+      stopType = "Stop"
+      companyName = values_text[indexName]
+      address = values_text[indexAddress]
+      if values_text[indexDate].nil? == false
+        customerAppTimeFrom = values_text[indexDate]
+        customerAppTimeTo = values_text[indexDate]
+      else
+        customerAppTimeFrom = nil
+        customerAppTimeTo = nil
+      end
 
-    deliveryStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
-      address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+      deliveryStopData = RateConfStopData.new(
+        stopType: stopType, 
+        companyName: companyName, 
+        address: address,
+        customerAppTimeFrom: customerAppTimeFrom, 
+        customerAppTimeTo: customerAppTimeTo)
 
-    rateConfData = RateConfData.new(
+      keys_map.delete_at(indexName)
+      keys_map.delete_at(indexAddress)
+      keys_map.delete_at(indexDate)
+
+      values_text.delete_at(indexName)
+      values_text.delete_at(indexAddress)
+      values_text.delete_at(indexDate)
+  #end
+  
+  rateConfData = RateConfData.new(
       customer:customer,
       notificationEmail: notificationEmail,
       customerLoad: customerLoad,
@@ -196,5 +224,5 @@ class ExtractorService
       weight: weight,
       stopData: [pickUpStopData, deliveryStopData]
     ) 
-  end
+end
 end
