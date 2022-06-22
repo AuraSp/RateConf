@@ -6,13 +6,15 @@ This repo contains API(rateconfocr) for extracting rate confirmation document in
 
 Web API uses [AWS Textract](https://aws.amazon.com/textract/) api to extract key value pair, table and text data from the pdf.
 
-## Install
 
-### Clone the repository
+## Clone the repository
 
 ```shell
 git clone git@github.com:GPTransco/rateconfocr.git
 ```
+## Install
+
+## Rails web API
 
 ### Check your Ruby version
 
@@ -30,25 +32,45 @@ rbenv install 3.1.0
 
 ### Install dependencies
 
-Using [Bundler](https://github.com/bundler/bundler) and [Yarn](https://github.com/yarnpkg/yarn):
+Using [Bundler](https://github.com/bundler/bundler)
 
 ```shell
-bundle && yarn
+cd server
+bundle
 ```
 
 ### Initialize the database
 
 ```shell
+cd server
 rails db:create db:migrate db:seed
 ```
 
 ### Create HMAC key for encrypting API tokens in the database
 ```shell
+cd server
 export API_KEY_HMAC_SECRET_KEY=testHmacSecret
 ```
 
-## Serve
+### Serve
 
 ```shell
+cd server
 foreman start -f Procfile.dev
+```
+## Frontend web client
+You will need `node` and `npm` installed globally on your machine.  
+
+### Installation:
+
+```shell
+cd frontend
+npm install
+```
+
+### To Start Server:
+
+```shell
+cd frontend
+npm start
 ```
