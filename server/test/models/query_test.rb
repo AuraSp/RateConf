@@ -1,7 +1,8 @@
 require "test_helper"
 
 class QueryTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "query should save" do
+    query = Query.new
+    assert query.save
+  end
 end

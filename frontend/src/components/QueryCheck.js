@@ -49,7 +49,7 @@ const QueryCheck = () => {
           requiredData = requiredData.replace(requiredData.match(reg)[0], '')
         }
         //console.log(allData)
-        console.log("JOb is finished");
+        console.log("Job is finished");
         document.getElementById("jobStatus").innerHTML = "Job is finished."
         setData(response.query[0])
       }

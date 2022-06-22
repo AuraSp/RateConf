@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.2"
+ruby "3.1.0"
 
 
 #Amazon gems
@@ -59,6 +59,7 @@ gem 'rmagick'
 gem 'chilkat'
 gem 'redis'
 gem 'sidekiq'
+gem 'pg'
 gem 'foreman', '~> 0.87.2'
 # Use Sass to process CSS
 # gem "sassc-rails"
@@ -88,3 +89,5 @@ group :test do
   gem "selenium-webdriver"
   gem "webdrivers"
 end
+
+gem "bcrypt", "~> 3.1"
