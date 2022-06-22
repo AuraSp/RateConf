@@ -24,7 +24,7 @@ const QueryCheck = () => {
     axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Token Test',
+        'Authorization': 'Bearer gg',
         'Access-Control-Allow-Origin': "*",
       }
     }).then((res) => {
@@ -51,12 +51,11 @@ const QueryCheck = () => {
         //console.log(allData)
         console.log("Job is finished");
         document.getElementById("jobStatus").innerHTML = "Job is finished."
-        setData(response.query[0])
+        setLoad(false)
       }
       else if (response.query[0].status === "processing") {
         console.log("The Document is still being processed");
         document.getElementById("jobStatus").innerHTML = "The Document is still being processed."
-        setData(response.query[0])
       }
     }
   }
@@ -64,8 +63,6 @@ const QueryCheck = () => {
   useEffect(() => {
     updateData();
   }, [response])
-
-  console.log(data)
 
   return (
     <div>

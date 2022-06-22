@@ -16,7 +16,7 @@ class Api::V1::PdfApiController < ApplicationController
       AnalyzePdfJob.perform_later(@query.id, params[:pdfBase64], params[:company])
 
       #return query ID
-      render json: { queryUUID: queryUUID, enquirer: @current_bearer.name}, status: :ok
+      render json: { queryUUID: queryUUID}, status: :ok
 
     rescue Exception => ex
       render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
