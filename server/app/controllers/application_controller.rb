@@ -1,14 +1,11 @@
 class ApplicationController < ActionController::Base
-  TOKEN = "Test"
+  include ApiKeyAuthenticatable 
+  
+  prepend_before_action :authenticate_with_api_key!
 
-  before_action :authenticate
-  protect_from_forgery with: :null_session
 
-  private
-
-  def authenticate
-    authenticate_or_request_with_http_token do |token, options|
-      ActiveSupport::SecurityUtils.secure_compare(token, TOKEN)
-    end
+  def destroy
+    api_key = current_bearer.api_keys.find(params[:id]) 
+    api_key.destroy 
   end
 end
