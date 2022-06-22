@@ -5,7 +5,7 @@ import axios from "axios";
 const QueryCheck = () => {
   const [queryId, setQueryId] = useState('');
   const [response, setResponse] = useState([]);
-  let [data, setData] = useState();
+  const [load, setLoad] = useState(true);
 
   const handleChangeQuery = event => {
     setQueryId(event.target.value);
@@ -79,7 +79,9 @@ const QueryCheck = () => {
         </form>
         <div>
           <h3 id='jobStatus'></h3>
-          <p>{JSON.stringify(data.rate_conf_data)}</p>
+          {!load &&
+            <p>{JSON.stringify(response.query[0].rate_conf_data)}</p>
+          }
         </div>
       </div>
     </div>
