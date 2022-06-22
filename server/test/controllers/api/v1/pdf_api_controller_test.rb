@@ -1,10 +1,6 @@
 require "test_helper"
 
 class Api::V1::PdfApiControllerTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
-
   #GET
   test "GET with auth should return success" do
     get "/api/v1/pdf_api", params: {"id": ""}, headers: { "Authorization": "Token Test" }
