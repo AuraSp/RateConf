@@ -3,7 +3,8 @@ Data Entry Project
 
 ## About
 This repo contains API(rateconfocr) for extracting rate confirmation document information from pdfs and web client(frontend) for testing it.
-Web API uses AWS Textract api to extract key value pair, table and text data from the pdf.
+
+Web API uses [AWS Textract](https://aws.amazon.com/textract/) api to extract key value pair, table and text data from the pdf.
 
 ## Install
 
