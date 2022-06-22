@@ -46,4 +46,5 @@ jobs:
       - name: Run tests
         run: |
           cd server
+          export API_KEY_HMAC_SECRET_KEY=testHmacSecret
           bin/rake
