@@ -8,11 +8,6 @@ class Api::V1::PdfApiController < ApplicationController
 
     def create
       begin
-        #if params[:company] == "kenco" || params[:company] == "rjw"
-           #render json: {status: "OK"}, status: :ok
-        #else
-            #render json: {status: "FAILURE", error: ex, errorTrace: ex.backtrace}, status: 500
-        #end
         queryUUID = SecureRandom.uuid
         @query = Query.new(queryId: queryUUID, status:"started")
         @query.save

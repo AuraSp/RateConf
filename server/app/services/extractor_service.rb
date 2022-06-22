@@ -107,32 +107,42 @@ class ExtractorService
     end
 
     rjwData = {}
+    keys = []
+    vals = []
 
     key_map.each do |block_id, key_block|
       value_block = DataExtractorService.new.findValueBlockRjw(key_block, value_map)
       key = DataExtractorService.new.getTextRjw(key_block, block_map)
       val = DataExtractorService.new.getTextRjw(value_block, block_map)
+      keys.push(key)
+      vals.push(val)
       if rjwData.key?(key)
         rjwData[key+"1"] = val
+        
       else
         rjwData[key] = val
       end
     end
 
+    #main data
     customer = "Rjw"
-    notificationEmail = rjwData["Email: "]
-    customerLoad = rjwData["Pieces \ Spots: "] 
-    linehaulRate = rjwData["Total Carrier Pay: "]
+    notificationEmail = vals[keys.find_index('Email: ')]
+    customerLoad = vals[keys.find_index('Pieces \ Spots: ')] 
+    linehaulRate = vals[keys.find_index("Total Carrier Pay: ")]
     fuelSurcharge = nil
-    weight = rjwData["Weight (lbs): "]
+    weight = vals[keys.find_index("Weight (lbs): ")]
 
     #pickup data
+    indexName = keys.find_index('Name: ')
+    indexAddress = keys.find_index('Address: ')
+    indexDate = keys.find_index('Date: ')
+
     stopType = "Pick Up"
-    companyName = rjwData["Name: "]
-    address = rjwData["Address: "]
-    if rjwData["Date: "].nil? == false
-      customerAppTimeFrom = rjwData["Date: "].split(" ")[0] + " " + rjwData["Date: "].split(" ")[1]
-      customerAppTimeTo = rjwData["Date: "].split(" ")[2] + " " + rjwData["Date: "].split(" ")[3]
+    companyName = vals[indexName]
+    address = vals[indexAddress]
+    if vals[indexDate].nil? == false
+      customerAppTimeFrom = vals[indexDate].split(" ")[0] + " " + vals[indexDate].split(" ")[1]
+      customerAppTimeTo = vals[indexDate].split(" ")[2] + " " + vals[indexDate].split(" ")[3]
     else
       customerAppTimeFrom = nil
       customerAppTimeTo = nil
@@ -145,13 +155,26 @@ class ExtractorService
       customerAppTimeFrom: customerAppTimeFrom, 
       customerAppTimeTo: customerAppTimeTo)
 
+    #delete used keys and values (because of duplicated keys)
+    keys.delete_at(indexName)
+    keys.delete_at(indexAddress)
+    keys.delete_at(indexDate)
+
+    vals.delete_at(indexName)
+    vals.delete_at(indexAddress)
+    vals.delete_at(indexDate)
+
     #stop data
+    indexName = keys.find_index('Name: ')
+    indexAddress = keys.find_index('Address: ')
+    indexDate = keys.find_index('Date: ')
+
     stopType = "Stop"
-    companyName = rjwData["Name: 1"]
-    address = rjwData["Address: 1"]
-    if rjwData["Date: 1"].nil? == false
-      customerAppTimeFrom = rjwData["Date: 1"].split(" ")[0] + " " + rjwData["Date: 1"].split(" ")[1]
-      customerAppTimeTo = rjwData["Date: 1"].split(" ")[2] + " " + rjwData["Date: 1"].split(" ")[3]
+    companyName = vals[indexName]
+    address = vals[indexAddress]
+    if vals[indexDate].nil? == false
+      customerAppTimeFrom = vals[indexDate].split(" ")[0] + " " + vals[indexDate].split(" ")[1]
+      customerAppTimeTo = vals[indexDate].split(" ")[2] + " " + vals[indexDate].split(" ")[3]
     else
       customerAppTimeFrom = nil
       customerAppTimeTo = nil
