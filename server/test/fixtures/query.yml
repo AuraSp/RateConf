@@ -1,0 +1,8 @@
+query1:
+  query_id: "1111-1111"
+  rate_conf_data: "valid data"
+  status: "finished"
+query2:
+  query_id: "2222-2222"
+  rate_conf_data: "invalid data"
+  status: "failed"
