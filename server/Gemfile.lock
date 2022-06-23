@@ -1361,6 +1361,18 @@ GEM
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
     jmespath (1.6.1)
+    kaminari (1.2.2)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.2.2)
+      kaminari-activerecord (= 1.2.2)
+      kaminari-core (= 1.2.2)
+    kaminari-actionview (1.2.2)
+      actionview
+      kaminari-core (= 1.2.2)
+    kaminari-activerecord (1.2.2)
+      activerecord
+      kaminari-core (= 1.2.2)
+    kaminari-core (1.2.2)
     launchy (2.5.0)
       addressable (~> 2.7)
     letter_opener (1.8.1)
@@ -1505,6 +1517,7 @@ DEPENDENCIES
   foreman (~> 0.87.2)
   importmap-rails
   jbuilder
+  kaminari
   letter_opener
   open-uri
   puma (~> 5.0)

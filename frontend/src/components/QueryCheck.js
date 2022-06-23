@@ -49,14 +49,13 @@ const QueryCheck = () => {
           requiredData = requiredData.replace(requiredData.match(reg)[0], '')
         }
         //console.log(allData)
-        console.log("JOb is finished");
+        console.log("Job is finished");
         document.getElementById("jobStatus").innerHTML = "Job is finished."
-        setData(response.query[0])
+        setLoad(false);
       }
       else if (response.query[0].status === "processing") {
         console.log("The Document is still being processed");
         document.getElementById("jobStatus").innerHTML = "The Document is still being processed."
-        setData(response.query[0])
       }
     }
   }
@@ -65,7 +64,7 @@ const QueryCheck = () => {
     updateData();
   }, [response])
 
-  console.log(data)
+  console.log(updateData)
 
   return (
     <div>

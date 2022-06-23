@@ -60,6 +60,7 @@ gem 'chilkat'
 gem 'redis'
 gem 'sidekiq'
 gem 'foreman', '~> 0.87.2'
+gem 'kaminari'
 # Use Sass to process CSS
 # gem "sassc-rails"
 

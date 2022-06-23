@@ -12,12 +12,7 @@ class Api::V1::PdfApiController < ApplicationController
       @query = Query.new(query_id: queryUUID, status: "started")
       @query.save
 
-      #separate pdf analysis into separate thread
-
-      #Thread.new do
-      #  PdfQueryService.new.startNewPdfAnalysis(@query.id, params[:pdfBase64], params[:company])
-      #end
-
+      #separate pdf analysis into separate job
       AnalyzePdfJob.perform_later(@query.id, params[:pdfBase64], params[:company])
 
       #return query ID

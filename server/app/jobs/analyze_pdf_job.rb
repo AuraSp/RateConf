@@ -13,7 +13,13 @@ class AnalyzePdfJob < ApplicationJob
 
       #decode uploaded pdf file
       tempPath = PdfService.new.decodePdfFromB64(base64Pdf, @query.query_id)
-      @audit.logs.create(text: "decoding uploaded pdf file")
+
+      if !tempPath
+        @audit.logs.create(text: "decoding uploaded pdf file failed")
+      else
+        @audit.logs.create(text: "decoding uploaded pdf file")
+      end
+
       @audit.logs.create(text: "converting pdf into image for extraction")
 
       #request s3 to analyze the file
@@ -51,6 +57,7 @@ class AnalyzePdfJob < ApplicationJob
           @query.update(status: "finished", rate_conf_data: extractedData, error_data: @lastlog.text)
           @query.save
           ContactMailer.analyzedData(@audit).deliver_later
+          ContactMailer.analyzedData_null(@audit).deliver_later
           break
         end
         if response.job_status == "FAILED"
