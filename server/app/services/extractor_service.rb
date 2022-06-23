@@ -149,10 +149,6 @@ class ExtractorService
       end
     end
 
-    puts keys_map 
-    puts "-----------"
-    puts values_text
-
     #main data
     customer = "Rjw"
     notificationEmail = values_map[keys.find_index('Email: ')]
@@ -193,12 +189,6 @@ class ExtractorService
     values_text.delete_at(0)
     values_text.delete_at(0)
     values_text.delete_at(0)
-    #puts "-----afterdelete------"
-    #puts keys_map 
-    #puts "-----------"
-    #puts values_text
-
-    #stop data
 
     deliveryStopData = []
     while keys_map.include? "Name:"
@@ -247,11 +237,6 @@ class ExtractorService
         values_text.delete_at(0)
         values_text.delete_at(0)
     end
-
-      #puts "-----afterdelete------"
-      #puts keys_map 
-      #puts "-----------"
-      #puts values_text
   end
   
   rateConfData = RateConfData.new(
