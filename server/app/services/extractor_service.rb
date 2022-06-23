@@ -98,6 +98,7 @@ class ExtractorService
     values_text = []
 
     found = false
+    i = 0;
 
     for block in responseBlocks
       temp_text = block.text
@@ -105,6 +106,10 @@ class ExtractorService
       if temp_text.nil? == false
         if found == true
           values_text.push(temp_text)
+          tempResponse = responseBlocks[i+3].text
+          if tempResponse.length() == 15
+            values_text.push(tempResponse)
+          end
           found = false
         end
         if temp_text["Name:"] || temp_text["Address:"] || temp_text["Date:"]
@@ -121,12 +126,11 @@ class ExtractorService
           value_map[block_id] = block
         end
       end
+      i = i + 1
     end
     rjwData = {}
     keys = []
     values_map = []
-
-    #puts values_text
 
     key_map.each do |block_id, key_block|
       value_block = DataExtractorService.new.findValueBlockRjw(key_block, value_map)
@@ -141,6 +145,10 @@ class ExtractorService
         rjwData[key] = val
       end
     end
+
+    puts keys_map 
+    puts "-----------"
+    puts values_text
 
     #main data
     customer = "Rjw"
@@ -157,10 +165,10 @@ class ExtractorService
 
     stopType = "Pick Up"
     companyName = values_text[indexName]
-    address = values_text[indexAddress]
+    address = values_text[indexAddress + 1]
     if values_text[indexDate].nil? == false
       customerAppTimeFrom = values_text[indexDate]
-      customerAppTimeTo = values_text[indexDate]
+      customerAppTimeTo = values_text[indexDate + 1]
     else
       customerAppTimeFrom = nil
       customerAppTimeTo = nil
@@ -174,26 +182,31 @@ class ExtractorService
       customerAppTimeTo: customerAppTimeTo)
 
     #delete used keys and values (because of duplicated keys)
-    keys.delete_at(indexName)
-    keys.delete_at(indexAddress)
-    keys.delete_at(indexDate)
+    keys_map.delete_at(0)
+    keys_map.delete_at(0)
+    keys_map.delete_at(0)
 
-    values_text.delete_at(indexName)
-    values_text.delete_at(indexAddress)
-    values_text.delete_at(indexDate)
+    values_text.delete_at(0)
+    values_text.delete_at(0)
+    values_text.delete_at(0)
+    values_text.delete_at(0)
+    puts "-----afterdelete------"
+    puts keys_map 
+    puts "-----------"
+    puts values_text
 
     #stop data
     #while keys_map.include? "Name:"
       indexName = keys_map.find_index("Name:")
       indexAddress = keys_map.find_index("Address:")
       indexDate = keys_map.find_index("Date:")
-
+      
       stopType = "Stop"
       companyName = values_text[indexName]
-      address = values_text[indexAddress]
+      address = values_text[indexAddress + 1]
       if values_text[indexDate].nil? == false
         customerAppTimeFrom = values_text[indexDate]
-        customerAppTimeTo = values_text[indexDate]
+        customerAppTimeTo = values_text[indexDate + 1]
       else
         customerAppTimeFrom = nil
         customerAppTimeTo = nil
@@ -206,13 +219,14 @@ class ExtractorService
         customerAppTimeFrom: customerAppTimeFrom, 
         customerAppTimeTo: customerAppTimeTo)
 
-      keys_map.delete_at(indexName)
-      keys_map.delete_at(indexAddress)
-      keys_map.delete_at(indexDate)
+      keys_map.delete_at(0)
+      keys_map.delete_at(0)
+      keys_map.delete_at(0)
 
-      values_text.delete_at(indexName)
-      values_text.delete_at(indexAddress)
-      values_text.delete_at(indexDate)
+      values_text.delete_at(0)
+      values_text.delete_at(0)
+      values_text.delete_at(0)
+      values_text.delete_at(0)
   #end
   
   rateConfData = RateConfData.new(
