@@ -102,6 +102,7 @@ class ExtractorService
 
     for block in responseBlocks
       temp_text = block.text
+      type = block.block_type
       
       if temp_text.nil? == false
         if found == true
@@ -113,8 +114,10 @@ class ExtractorService
           found = false
         end
         if temp_text["Name:"] || temp_text["Address:"] || temp_text["Date:"]
-          keys_map.push(temp_text)
-          found = true
+          if type == "LINE"
+            keys_map.push(temp_text)
+            found = true
+          end
         end
       end
       block_id = block.id
@@ -190,44 +193,62 @@ class ExtractorService
     values_text.delete_at(0)
     values_text.delete_at(0)
     values_text.delete_at(0)
-    puts "-----afterdelete------"
-    puts keys_map 
-    puts "-----------"
-    puts values_text
+    #puts "-----afterdelete------"
+    #puts keys_map 
+    #puts "-----------"
+    #puts values_text
 
     #stop data
-    #while keys_map.include? "Name:"
+    while keys_map.include? "Name:"
       indexName = keys_map.find_index("Name:")
       indexAddress = keys_map.find_index("Address:")
       indexDate = keys_map.find_index("Date:")
+
+      if values_text[indexDate + 1].length() == 15
       
-      stopType = "Stop"
-      companyName = values_text[indexName]
-      address = values_text[indexAddress + 1]
-      if values_text[indexDate].nil? == false
-        customerAppTimeFrom = values_text[indexDate]
-        customerAppTimeTo = values_text[indexDate + 1]
+        stopType = "Stop"
+        companyName = values_text[indexName]
+        address = values_text[indexAddress + 1]
+        if values_text[indexDate].nil? == false
+          customerAppTimeFrom = values_text[indexDate]
+          customerAppTimeTo = values_text[indexDate + 1]
+        else
+          customerAppTimeFrom = nil
+          customerAppTimeTo = nil
+        end
+
+        deliveryStopData = RateConfStopData.new(
+          stopType: stopType, 
+          companyName: companyName, 
+          address: address,
+          customerAppTimeFrom: customerAppTimeFrom, 
+          customerAppTimeTo: customerAppTimeTo)
+
+          puts deliveryStopData
+
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
       else
-        customerAppTimeFrom = nil
-        customerAppTimeTo = nil
-      end
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
 
-      deliveryStopData = RateConfStopData.new(
-        stopType: stopType, 
-        companyName: companyName, 
-        address: address,
-        customerAppTimeFrom: customerAppTimeFrom, 
-        customerAppTimeTo: customerAppTimeTo)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+    end
 
-      keys_map.delete_at(0)
-      keys_map.delete_at(0)
-      keys_map.delete_at(0)
-
-      values_text.delete_at(0)
-      values_text.delete_at(0)
-      values_text.delete_at(0)
-      values_text.delete_at(0)
-  #end
+      #puts "-----afterdelete------"
+      #puts keys_map 
+      #puts "-----------"
+      #puts values_text
+  end
   
   rateConfData = RateConfData.new(
       customer:customer,
