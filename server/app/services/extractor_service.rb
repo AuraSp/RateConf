@@ -1,5 +1,5 @@
 require "aws-sdk"
-require 'json'
+require "json"
 
 class ExtractorService
   PdfField = Struct.new(:value, :x, :y, :width, :height)
@@ -10,7 +10,7 @@ class ExtractorService
     #temporary data to simulate aws response blocks
     #text = File.read("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/data.json")
     #responseBlocks = JSON.parse(text, object_class: OpenStruct)
-  
+
     #text = File.read("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/data.json")
     #responseBlocks = JSON.parse(text, object_class: OpenStruct)
 
@@ -22,7 +22,7 @@ class ExtractorService
     when "rjw"
       extractData_rjw(responseBlocks)
     else
-      raise RuntimeError
+      raise NotImplementedError
     end
   end
 
@@ -58,8 +58,9 @@ class ExtractorService
       stopType: stopType,
       companyName: companyName,
       address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+      customerAppTimeFrom: customerAppTimeFrom,
+      customerAppTimeTo: customerAppTimeTo,
+    )
     #delivery stop data
     stopType = "Delivery"
     companyName = keyValuePairs["Destination: "].split(",")[0]
@@ -85,94 +86,97 @@ class ExtractorService
       weight: weight,
       stopData: [pickUpStopData, deliveryStopData],
     )
-
-    
   end
 
   def extractData_rjw(responseBlocks)
     #awsBlocks = File.read('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json')
     #responseBlocks = JSON.parse(awsBlocks, object_class: OpenStruct)
-    blocks = responseBlocks.select { |b| b.block_type == "LINE"}
+    begin
+      blocks = responseBlocks.select { |b| b.block_type == "LINE" }
 
-    pdfData = []
-    blocks.each do |block|
-      pdfData.push(block.text)
-    end
-    
-    customer = "Rjw"
-    notificationEmail = pdfData[11].split.last
-    customerLoad = pdfData[9] 
-    linehaulRate = pdfData[55].split.last.tr('$', '')
-    weight = pdfData[56].split.last
-    fuelSurcharge = nil
-    
-    #pickup data
-    stopType = "Pick Up"
-    companyName = pdfData[70]
-    address = pdfData[74]
-    customerAppTimeFrom = pdfData[72].insert(13, ':')
-    customerAppTimeTo = pdfData[75].insert(13, ':')
+      pdfData = []
+      blocks.each do |block|
+        pdfData.push(block.text)
+      end
 
-    pickUpStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
-      address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+      customer = "Rjw"
+      notificationEmail = pdfData[11].split.last
+      customerLoad = pdfData[9]
+      linehaulRate = pdfData[55].split.last.tr("$", "")
+      weight = pdfData[56].split.last
+      fuelSurcharge = nil
 
-    #stop data
-    stopCompany = 87
-    stopAddress = 91
-    stopFrom = 89
-    stopTo = 92
+      #pickup data
+      stopType = "Pick Up"
+      companyName = pdfData[70]
+      address = pdfData[74]
+      customerAppTimeFrom = pdfData[72].insert(13, ":")
+      customerAppTimeTo = pdfData[75].insert(13, ":")
 
-    stopType = "Delivery"
-    companyName = pdfData[stopCompany]
-    address = pdfData[stopAddress]
-    customerAppTimeFrom = pdfData[stopFrom].insert(13, ':')
-    customerAppTimeTo = pdfData[stopTo].insert(13, ':')
+      pickUpStopData = RateConfStopData.new(
+        stopType: stopType,
+        companyName: companyName,
+        address: address,
+        customerAppTimeFrom: customerAppTimeFrom,
+        customerAppTimeTo: customerAppTimeTo,
+      )
 
-    deliveryStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
-      address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
-
-
-    #if there are any more stops // +20 for each stop
-    stop = 85
-
-    while pdfData[stop+20].include? "so"
-      stopCompany += 20
-      stopAddress += 20
-      stopFrom += 20
-      stopTo += 20
+      #stop data
+      stopCompany = 87
+      stopAddress = 91
+      stopFrom = 89
+      stopTo = 92
 
       stopType = "Delivery"
       companyName = pdfData[stopCompany]
       address = pdfData[stopAddress]
-      customerAppTimeFrom = pdfData[stopFrom].insert(13, ':')
-      customerAppTimeTo = pdfData[stopTo].insert(13, ':')
+      customerAppTimeFrom = pdfData[stopFrom].insert(13, ":")
+      customerAppTimeTo = pdfData[stopTo].insert(13, ":")
 
       deliveryStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
-      address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+        stopType: stopType,
+        companyName: companyName,
+        address: address,
+        customerAppTimeFrom: customerAppTimeFrom,
+        customerAppTimeTo: customerAppTimeTo,
+      )
 
-      stop += 20
+      #if there are any more stops // +20 for each stop
+      stop = 85
+
+      while pdfData[stop + 20].include? "so"
+        stopCompany += 20
+        stopAddress += 20
+        stopFrom += 20
+        stopTo += 20
+
+        stopType = "Delivery"
+        companyName = pdfData[stopCompany]
+        address = pdfData[stopAddress]
+        customerAppTimeFrom = pdfData[stopFrom].insert(13, ":")
+        customerAppTimeTo = pdfData[stopTo].insert(13, ":")
+
+        deliveryStopData = RateConfStopData.new(
+          stopType: stopType,
+          companyName: companyName,
+          address: address,
+          customerAppTimeFrom: customerAppTimeFrom,
+          customerAppTimeTo: customerAppTimeTo,
+        )
+
+        stop += 20
+      end
+
+      rateConfData = RateConfData.new(
+        customer: customer,
+        notificationEmail: notificationEmail,
+        customerLoad: customerLoad,
+        linehaulRate: linehaulRate,
+        fuelSurcharge: fuelSurcharge,
+        weight: weight,
+        stopData: [pickUpStopData, deliveryStopData],
+      )
+    rescue KeyError
     end
-    
-    rateConfData = RateConfData.new(
-      customer:customer,
-      notificationEmail: notificationEmail,
-      customerLoad: customerLoad,
-      linehaulRate: linehaulRate,
-      fuelSurcharge: fuelSurcharge,
-      weight: weight,
-      stopData: [pickUpStopData, deliveryStopData]
-    )
   end
 end
