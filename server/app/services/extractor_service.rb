@@ -199,6 +199,8 @@ class ExtractorService
     #puts values_text
 
     #stop data
+
+    deliveryStopData = []
     while keys_map.include? "Name:"
       indexName = keys_map.find_index("Name:")
       indexAddress = keys_map.find_index("Address:")
@@ -217,12 +219,14 @@ class ExtractorService
           customerAppTimeTo = nil
         end
 
-        deliveryStopData = RateConfStopData.new(
+        deliveryStop = RateConfStopData.new(
           stopType: stopType, 
           companyName: companyName, 
           address: address,
           customerAppTimeFrom: customerAppTimeFrom, 
           customerAppTimeTo: customerAppTimeTo)
+        
+        deliveryStopData.push(deliveryStop)
 
           puts deliveryStopData
 
