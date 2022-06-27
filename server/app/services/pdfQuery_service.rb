@@ -30,12 +30,12 @@ class PdfQueryService
 
       if response.job_status == "SUCCEEDED"
         extractedData = ExtractorService.new.extractData(company, response.blocks)
-        @query.update(status: "finished", rateConfData: extractedData)
+        @query.update(status: "finished", rate_conf_data: extractedData)
         @query.save
         break
       end
       if response.job_status == "FAILED"
-        @query.update(status: "failed", rateConfData: extractedData)
+        @query.update(status: "failed", rate_conf_data: extractedData)
         @query.save
         break
       end

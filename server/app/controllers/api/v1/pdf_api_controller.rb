@@ -1,42 +1,37 @@
 require "RMagick"
 require "chilkat"
-require 'securerandom'
+require "securerandom"
 
 class Api::V1::PdfApiController < ApplicationController
-    # #http://localhost:3000/pdf_api/
-    protect_from_forgery with: :null_session
+  # #http://localhost:3000/pdf_api/
+  protect_from_forgery with: :null_session
 
-    def create
-      begin
-        queryUUID = SecureRandom.uuid
-        @query = Query.new(queryId: queryUUID, status:"started")
-        @query.save
+  def create
+    begin
+      queryUUID = SecureRandom.uuid
+      @query = Query.new(query_id: queryUUID, status: "started", enquirer: @current_bearer.name)
+      @query.save
 
-        #separate pdf analysis into separate thread
+      #separate pdf analysis into separate job
+      AnalyzePdfJob.perform_later(@query.id, params[:pdfBase64], params[:company])
 
-        #Thread.new do
-        #  PdfQueryService.new.startNewPdfAnalysis(@query.id, params[:pdfBase64], params[:company])
-        #end
+      #return query ID
+      render json: { queryUUID: queryUUID}, status: :ok
 
-        AnalyzePdfJob.perform_later(@query.id, params[:pdfBase64], params[:company])
-
-        #return query ID
-        render json: { queryUUID: queryUUID}, status: :ok
-      rescue Exception => ex
-        render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
-      ensure
-  
-      end
-    end
-  
-    def index
-      begin
-        #render json: { query: params[:id]}, status: :ok
-        render json: { query: Query.where(queryId: params[:id])}, status: :ok
-      rescue Exception => ex
-        render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
-      ensure
-      end
+    rescue Exception => ex
+      render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
+    ensure
     end
   end
-  
+
+  def index
+    begin
+      render json: { query: Query.where(query_id: params[:id]) }, status: :ok
+      #ContactMailer.analyzedData().deliver_later
+    rescue Exception => ex
+      render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
+      #ContactMailer.analyzedData_null().deliver_later
+    ensure
+    end
+  end
+end

@@ -1,7 +1,7 @@
 require "aws-sdk"
 require 'json'
 
-class ExtractorService  
+class ExtractorService
   PdfField = Struct.new(:value, :x, :y, :width, :height)
   RateConfData = Struct.new(:salesRep, :customer, :notificationEmail, :loadInstrunctions, :customerLoad, :linehaulRate, :fuelSurcharge, :commodity, :weight, :stopData, keyword_init: true)
   RateConfStopData = Struct.new(:stopType, :pu, :companyName, :address, :phone, :customerAppTimeFrom, :customerAppTimeTo, keyword_init: true)
@@ -22,7 +22,7 @@ class ExtractorService
     when "rjw"
       extractData_rjw(responseBlocks)
     else
-      raise RuntimeError, "You messed up!"
+      raise RuntimeError
     end
   end
 
@@ -40,13 +40,12 @@ class ExtractorService
     notificationEmail = keyValuePairs["Remit Email: "]
     customerLoad = keyValuePairs["Load Number: "]
     linehaulRate = tableData[1][1][2]
-    if(tableData[1][2][0].include? "urcharge")
+    if (tableData[1][2][0].include? "urcharge")
       fuelSurcharge = tableData[1][2][3]
     else
       fuelSurcharge = 0
     end
     weight = keyValuePairs["Weight "]
-
 
     #pick up stop data
     stopType = "Pick Up"
@@ -56,8 +55,8 @@ class ExtractorService
     customerAppTimeTo = keyValuePairs["Pickup: "].split(" - ")[1]
 
     pickUpStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
+      stopType: stopType,
+      companyName: companyName,
       address: address,
       customerAppTimeFrom: customerAppTimeFrom, 
       customerAppTimeTo: customerAppTimeTo)
@@ -69,21 +68,22 @@ class ExtractorService
     customerAppTimeTo = keyValuePairs["Delivery: "].split(" - ")[1]
 
     deliveryStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
+      stopType: stopType,
+      companyName: companyName,
       address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+      customerAppTimeFrom: customerAppTimeFrom,
+      customerAppTimeTo: customerAppTimeTo,
+    )
 
     #put extracted data into final struct
     rateConfData = RateConfData.new(
-      customer:customer,
+      customer: customer,
       notificationEmail: notificationEmail,
       customerLoad: customerLoad,
       linehaulRate: linehaulRate,
       fuelSurcharge: fuelSurcharge,
       weight: weight,
-      stopData: [pickUpStopData, deliveryStopData]
+      stopData: [pickUpStopData, deliveryStopData],
     )
 
     
@@ -149,7 +149,6 @@ class ExtractorService
       end
     end
 
-    #main data
     customer = "Rjw"
     notificationEmail = values_map[keys.find_index('Email: ')]
     customerLoad = values_map[keys.find_index('Pieces \ Spots: ')] 
@@ -247,6 +246,10 @@ class ExtractorService
       fuelSurcharge: fuelSurcharge,
       weight: weight,
       stopData: [pickUpStopData, deliveryStopData]
+    )
+  end
+end
     ) 
 end
 end
+

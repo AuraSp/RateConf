@@ -23,7 +23,7 @@ const Input = () => {
     axios.post('http://localhost:5000/api/v1/pdf_api', data, {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Token Test',
+            'Authorization': 'Bearer gg',
             'Access-Control-Allow-Origin': "*",
         }
     }).then((res) => {
