@@ -1,4 +1,5 @@
 require "test_helper"
+require "securerandom"
 
 class Api::V1::PdfApiControllerTest < ActionDispatch::IntegrationTest
   #GET
@@ -19,10 +20,11 @@ class Api::V1::PdfApiControllerTest < ActionDispatch::IntegrationTest
   test "GET with ID should return proper query" do
     @user = User.create(name:"test")
     @user.api_keys.create(token: 'Token Test')
-    @query = Query.new(id: 0, query_id: "1111-1111", status: "started")
+    queryUUID = SecureRandom.uuid
+    @query = Query.new(query_id: queryUUID, status: "started")
     @query.save
-    get "/api/v1/pdf_api", params: {"id": "1111-1111"}, headers: { "Authorization": "Bearer Token Test" }
-    assert_match "\"query_id\":\"1111-1111\",\"rate_conf_data\":null,\"error_data\":null,", @response.body
+    get "/api/v1/pdf_api", params: {"id": queryUUID}, headers: { "Authorization": "Bearer Token Test" }
+    assert_match "\"query_id\":\"" + queryUUID + "\",\"rate_conf_data\":null,\"error_data\":null,", @response.body
   end
 
   #POST
