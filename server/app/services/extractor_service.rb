@@ -90,28 +90,87 @@ class ExtractorService
   end
 
   def extractData_rjw(responseBlocks)
-    #awsBlocks = File.read('/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/temp.json')
-    #responseBlocks = JSON.parse(awsBlocks, object_class: OpenStruct)
-    blocks = responseBlocks.select { |b| b.block_type == "LINE"}
+    key_map = {}
+    value_map = {}
+    block_map = {}
 
-    pdfData = []
-    blocks.each do |block|
-      pdfData.push(block.text)
+    keys_map = []
+    values_text = []
+
+    found = false
+    i = 0;
+
+    for block in responseBlocks
+      temp_text = block.text
+      type = block.block_type
+      
+      if temp_text.nil? == false
+        if found == true
+          values_text.push(temp_text)
+          tempResponse = responseBlocks[i+3].text
+          if tempResponse.length() == 15
+            values_text.push(tempResponse)
+          end
+          found = false
+        end
+        if temp_text["Name:"] || temp_text["Address:"] || temp_text["Date:"]
+          if type == "LINE"
+            keys_map.push(temp_text)
+            found = true
+          end
+        end
+      end
+      block_id = block.id
+      block_map[block_id] = block
+      if block.block_type == "KEY_VALUE_SET"
+        if block.entity_types[0] == "KEY"
+          key_map[block_id] = block
+        else
+          value_map[block_id] = block
+        end
+      end
+      i = i + 1
     end
-    
+    rjwData = {}
+    keys = []
+    values_map = []
+
+    key_map.each do |block_id, key_block|
+      value_block = DataExtractorService.new.findValueBlockRjw(key_block, value_map)
+      key = DataExtractorService.new.getTextRjw(key_block, block_map)
+      val = DataExtractorService.new.getTextRjw(value_block, block_map)
+      keys.push(key)
+      values_map.push(val)
+      if rjwData.key?(key)
+        rjwData[key+"1"] = val
+        
+      else
+        rjwData[key] = val
+      end
+    end
+
     customer = "Rjw"
-    notificationEmail = pdfData[11].split.last
-    customerLoad = pdfData[9] 
-    linehaulRate = pdfData[55].split.last.tr('$', '')
-    weight = pdfData[56].split.last
+    notificationEmail = values_map[keys.find_index('Email: ')]
+    customerLoad = values_map[keys.find_index('Pieces \ Spots: ')] 
+    linehaulRate = values_map[keys.find_index("Total Carrier Pay: ")]
     fuelSurcharge = nil
-    
+    weight = values_map[keys.find_index("Weight (lbs): ")]
+
     #pickup data
+    indexName = keys_map.find_index("Name:")
+    indexAddress = keys_map.find_index("Address:")
+    indexDate = keys_map.find_index("Date:")
+
     stopType = "Pick Up"
-    companyName = pdfData[70]
-    address = pdfData[74]
-    customerAppTimeFrom = pdfData[72].insert(13, ':')
-    customerAppTimeTo = pdfData[75].insert(13, ':')
+    companyName = values_text[indexName]
+    address = values_text[indexAddress + 1]
+    if values_text[indexDate].nil? == false
+      customerAppTimeFrom = values_text[indexDate]
+      customerAppTimeTo = values_text[indexDate + 1]
+    else
+      customerAppTimeFrom = nil
+      customerAppTimeTo = nil
+    end
 
     pickUpStopData = RateConfStopData.new(
       stopType: stopType, 
@@ -120,52 +179,66 @@ class ExtractorService
       customerAppTimeFrom: customerAppTimeFrom, 
       customerAppTimeTo: customerAppTimeTo)
 
-    #stop data
-    stopCompany = 87
-    stopAddress = 91
-    stopFrom = 89
-    stopTo = 92
+    #delete used keys and values (because of duplicated keys)
+    keys_map.delete_at(0)
+    keys_map.delete_at(0)
+    keys_map.delete_at(0)
 
-    stopType = "Delivery"
-    companyName = pdfData[stopCompany]
-    address = pdfData[stopAddress]
-    customerAppTimeFrom = pdfData[stopFrom].insert(13, ':')
-    customerAppTimeTo = pdfData[stopTo].insert(13, ':')
+    values_text.delete_at(0)
+    values_text.delete_at(0)
+    values_text.delete_at(0)
+    values_text.delete_at(0)
 
-    deliveryStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
-      address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+    deliveryStopData = []
+    while keys_map.include? "Name:"
+      indexName = keys_map.find_index("Name:")
+      indexAddress = keys_map.find_index("Address:")
+      indexDate = keys_map.find_index("Date:")
 
+      if values_text[indexDate + 1].length() == 15
+      
+        stopType = "Stop"
+        companyName = values_text[indexName]
+        address = values_text[indexAddress + 1]
+        if values_text[indexDate].nil? == false
+          customerAppTimeFrom = values_text[indexDate]
+          customerAppTimeTo = values_text[indexDate + 1]
+        else
+          customerAppTimeFrom = nil
+          customerAppTimeTo = nil
+        end
 
-    #if there are any more stops // +20 for each stop
-    stop = 85
+        deliveryStop = RateConfStopData.new(
+          stopType: stopType, 
+          companyName: companyName, 
+          address: address,
+          customerAppTimeFrom: customerAppTimeFrom, 
+          customerAppTimeTo: customerAppTimeTo)
+        
+        deliveryStopData.push(deliveryStop)
 
-    while pdfData[stop+20].include? "so"
-      stopCompany += 20
-      stopAddress += 20
-      stopFrom += 20
-      stopTo += 20
+          puts deliveryStopData
 
-      stopType = "Delivery"
-      companyName = pdfData[stopCompany]
-      address = pdfData[stopAddress]
-      customerAppTimeFrom = pdfData[stopFrom].insert(13, ':')
-      customerAppTimeTo = pdfData[stopTo].insert(13, ':')
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
 
-      deliveryStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
-      address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+      else
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
 
-      stop += 20
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
     end
-    
-    rateConfData = RateConfData.new(
+  end
+  
+  rateConfData = RateConfData.new(
       customer:customer,
       notificationEmail: notificationEmail,
       customerLoad: customerLoad,
@@ -176,3 +249,7 @@ class ExtractorService
     )
   end
 end
+    ) 
+end
+end
+
