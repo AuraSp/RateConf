@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_22_081331) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_27_073303) do
   create_table "api_keys", force: :cascade do |t|
     t.integer "bearer_id", null: false
     t.string "bearer_type", null: false
@@ -37,7 +37,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_22_081331) do
   end
 
   create_table "queries", force: :cascade do |t|
-    t.string "query_id"
+    t.string "query_id", null: false
     t.string "rate_conf_data"
     t.string "error_data"
     t.string "aws_s3_name"
@@ -45,6 +45,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_22_081331) do
     t.string "enquirer"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["query_id"], name: "index_queries_on_query_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
