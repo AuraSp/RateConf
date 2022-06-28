@@ -20,6 +20,17 @@ class AnalyzePdfJob < ApplicationJob
     @audit.logs.create(text: "requesting for analyzing the file")
     @query.update(aws_s3_name: uploadData)
 
+    # if !uploadData
+    #   @audit.logs.create(text: "upload to bucket failed")
+    # else
+    #   @audit.logs.create(text: "uploaded to bucket successfully")
+    # end
+    # if !AwsService.new.uploadToS3()
+    #   @audit.logs.create(text: "upload to bucket failed")
+    # else
+    #   @audit.logs.create(text: "uploaded to bucket successfully")
+    # end
+
     #receive jobID to access textract service data
     @audit.logs.create(text: "getting jobId to access textract service")
     jobID = AwsService.new.awsTextract(uploadData)

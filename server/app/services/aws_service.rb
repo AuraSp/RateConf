@@ -22,11 +22,9 @@ class AwsService
     if object_uploaded?(s3, bucket_name, object_key, path)
       puts "Object '#{object_key}' uploaded to bucket - '#{bucket_name}'."
       PdfService.new.deleteTempPdf(path)
-      Audit.last.logs.create(text: "uploaded to bucket successfully")
       return object_key
     else
       puts "Object '#{object_key}' not uploaded to bucket - '#{bucket_name}'."
-      Audit.last.logs.create(text: "upload to bucket failed")
     end
   end
 
