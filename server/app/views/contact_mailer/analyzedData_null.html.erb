@@ -1,5 +1,10 @@
-<h2>Data process response<h2>
+<h2>Data process response</h2>
 <p>Your data analization failed due to some kind of problem</p>
 
-<p>Could be Wi-fi?</p>
+<h3>Errors were found:</h3>
 
+<ul>
+  <% @e.each do |x| %> 
+      <li><%= x.text %><li>
+  <% end %>
+  </ul>

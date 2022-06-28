@@ -5,6 +5,7 @@ class DataExtractorService
 
   #extract function returning key value pairs
   def extractKeyValuePairs(awsBlocks)
+    begin
     extractedKey = ""
     prevExtractedKey = ""
     extractedValue = ""
@@ -40,11 +41,14 @@ class DataExtractorService
       end
     end
     return keyValueHash
+  rescue KeyError
+  end
   end
 
   #extract function returning tables
   #very shit currently
   def extractKeyTableData(awsBlocks)
+    begin
     extractedData = []
     #buffer 2d array
     extractedArray = Array.new(10) { Array.new(10) { } }
@@ -68,6 +72,8 @@ class DataExtractorService
     end
 
     return extractedData
+  rescue Exceptions::KeyTableDataExtraction
+  end
   end
 
   #Helper functions
