@@ -38,7 +38,7 @@ const QueryCheck = () => {
   const updateData = () => {
     if (response.length !== 0) {
       if (response.query[0].status === "finished") {
-        //console.log("finished!!!! :)))))))");
+
         const stringData = response.query[0].rate_conf_data;
         var requiredData = stringData.match(/"([^']+)"/)[0];
         var reg = /"(.*?)"/i;

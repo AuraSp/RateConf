@@ -12,7 +12,7 @@ Rails.application.routes.draw do
         end
       end
       # stebejimui
-      resources :queries do
+      resources :queries, default: { format: :json } do
         resources :audit do
           resources :logs
         end

@@ -27,11 +27,22 @@ class AnalyzePdfJob < ApplicationJob
       @audit.logs.create(text: "requesting s3 services")
       @audit.logs.create(text: "uploading to aws")
       @query.update(aws_s3_name: uploadData)
-      @audit.logs.create(text: "uploaded to bucket successfully")
+
+      if !uploadData
+        @audit.logs.create(text: "upload to bucket failed")
+      else
+        @audit.logs.create(text: "uploaded to bucket successfully")
+      end
 
       #receive jobID to access textract service data
       @audit.logs.create(text: "getting jobId to access textract service")
       jobID = AwsService.new.awsTextract(uploadData)
+
+      if !jobID
+        @audit.logs.create(text: "access textract service data failed")
+      else
+        @audit.logs.create(text: "access textract service data successfully")
+      end
 
       #start AWS text extraction
       textract = Aws::Textract::Client.new(
@@ -56,7 +67,7 @@ class AnalyzePdfJob < ApplicationJob
           @lastlog = @query.audit.logs.last
           @query.update(status: "finished", rate_conf_data: extractedData, error_data: @lastlog.text)
           @query.save
-          ContactMailer.analyzedData(@audit).deliver_later
+          # ContactMailer.analyzedData(@audit).deliver_later
           ContactMailer.analyzedData_null(@audit).deliver_later
           break
         end

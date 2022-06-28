@@ -3,12 +3,7 @@
 
 <p>Could be Wi-fi?</p>
 
-
-<ul>
   <% @e.each do |x| %> 
-    <li>
-      <div><%= x.id %><div><%= x.text %></div></div>
-    </li>
+      <pre><%= x.text %></pre>
   <% end %>
-</ul>
 
