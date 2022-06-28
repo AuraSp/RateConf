@@ -52,6 +52,15 @@ cd server
 export API_KEY_HMAC_SECRET_KEY=testHmacSecret
 ```
 
+### Create test user and assign API token to it
+```shell
+cd server
+rails console
+User.create! name: "TestUser"
+u = User.last
+u.api_keys.create! token: "gg"
+```
+
 ### Serve
 
 ```shell
