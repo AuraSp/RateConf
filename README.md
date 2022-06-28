@@ -46,6 +46,15 @@ cd server
 rails db:create db:migrate db:seed
 ```
 
+### Create test user and assign API token to it
+```shell
+cd server
+rails console
+User.create! name: "TestUser"
+u = User.last
+u.api_keys.create! token: "gg"
+```
+
 ### Create HMAC key for encrypting API tokens in the database
 ```shell
 cd server
