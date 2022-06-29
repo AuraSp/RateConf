@@ -46,6 +46,7 @@ class AnalyzePdfJob < ApplicationJob
         @audit.logs.create(text: "AWS Textract API received successfully")
 
         begin
+          print response.blocks.to_json
           extractedData = ExtractorService.new.extractData(company, response.blocks)
           @audit.logs.create(text: "extracted data taken successfully")
           @lastlog = @query.audit.logs.last
