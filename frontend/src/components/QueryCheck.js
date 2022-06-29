@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react'
 import { useEffect, useState } from "react";
 import axios from "axios";
+import QueryCard from './QueryCard';
+import List from './List';
 
 const QueryCheck = () => {
   const [queryId, setQueryId] = useState('');
@@ -17,7 +19,7 @@ const QueryCheck = () => {
       id: queryId
     })
 
-    console.log(data);
+    // console.log(data);
 
     const url = 'http://localhost:5000/api/v1/pdf_api' + '?id=' + queryId;
 
@@ -28,7 +30,7 @@ const QueryCheck = () => {
         'Access-Control-Allow-Origin': "*",
       }
     }).then((res) => {
-      setResponse(res.data);
+      setResponse(res.data.query[0]);
       console.log(res.data.query[0]);
     }).catch((error) => {
       console.error(error)
@@ -37,9 +39,9 @@ const QueryCheck = () => {
 
   const updateData = () => {
     if (response.length !== 0) {
-      if (response.query[0].status === "finished") {
+      if (response.status === "finished") {
         //console.log("finished!!!! :)))))))");
-        const stringData = response.query[0].rate_conf_data;
+        const stringData = response.rate_conf_data;
         var requiredData = stringData.match(/"([^']+)"/)[0];
         var reg = /"(.*?)"/i;
         var allData = [];
@@ -53,7 +55,7 @@ const QueryCheck = () => {
         document.getElementById("jobStatus").innerHTML = "Job is finished."
         setLoad(false)
       }
-      else if (response.query[0].status === "processing") {
+      else if (response.status === "processing") {
         console.log("The Document is still being processed");
         document.getElementById("jobStatus").innerHTML = "The Document is still being processed."
       }
@@ -74,12 +76,23 @@ const QueryCheck = () => {
           </label>
           <button id='requestButton' onClick={handleClick}>Click me</button>
         </form>
-        <div>
-          <h3 id='jobStatus'></h3>
-          {!load &&
-            <p>{JSON.stringify(response.query[0].rate_conf_data)}</p>
-          }
-        </div>
+        <h3 id='jobStatus'></h3>
+        {!load &&
+          <div className='responseBlock'>
+            <div className='cardBlock'>
+              <React.Fragment key={response.id}>
+                <QueryCard
+                  response={response} />
+              </React.Fragment>
+            </div>
+            <div className='rateBlock'>
+              <React.Fragment key={response.id}>
+                <List
+                  response={response} />
+              </React.Fragment>
+            </div>
+          </div>
+        }
       </div>
     </div>
   )

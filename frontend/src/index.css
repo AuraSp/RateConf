@@ -33,7 +33,7 @@ code {
 }
 
 #checkQuery {
-  display: block
+  display: block;
 }
 
 #checkQuery>div:nth-child(3) {
@@ -41,12 +41,7 @@ code {
   flex-flow: column wrap;
   justify-content: center;
   margin: 0.2em auto;
-}
-
-#checkQuery>div:nth-child(3)>p {
-  width: 50%;
-  height: auto;
-  margin: 0.2em auto;
+  border: 1px solid black;
 }
 
 #forms {
@@ -92,4 +87,18 @@ code {
   background-color: rgb(27, 27, 27);
   font-size: 30px;
   height: 75px;
+}
+
+.responseBlock {
+  border: 1px solid red;
+  display: flex;
+  flex-flow: column wrap;
+}
+
+.cardBlock {
+  border: 1px solid green;
+}
+
+.rateBlock {
+  border: 1px solid blue;
 }
