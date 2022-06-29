@@ -30,7 +30,7 @@
 !/tmp/storage/.keep
 
 /public/assets
-
+/.vscode/
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
