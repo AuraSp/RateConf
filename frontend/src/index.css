@@ -89,16 +89,40 @@ code {
   height: 75px;
 }
 
+h4 {
+  color: rgb(255, 255, 255);
+}
+
+span {
+color: #1a1a1a;
+font-weight: bold;
+}
+
 .responseBlock {
-  border: 1px solid red;
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: row wrap;
 }
 
-.cardBlock {
-  border: 1px solid green;
+.cardBlock,
+.rateBlock,
+.rate2Block,
+.rate3Block {
+  flex-basis: 25%;
+  margin-top: 1em;
 }
 
-.rateBlock {
-  border: 1px solid blue;
+.cardBlock .list,
+.rateBlock .list,
+.rate2Block .list,
+.rate3Block .list {
+  list-style-type: none;
+  margin: 0 auto;
+}
+
+.cardBlock .list li,
+.rateBlock .list li,
+.rate2Block .list li,
+.rate3Block .list li {
+  padding: 0.4em;
+  color: rgb(241, 241, 241);
 }

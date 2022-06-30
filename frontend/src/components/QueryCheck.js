@@ -2,7 +2,9 @@ import React, { Fragment } from 'react'
 import { useEffect, useState } from "react";
 import axios from "axios";
 import QueryCard from './QueryCard';
-import List from './List';
+import RateData from './Rate/RateData';
+import RatePickUp from './Rate/RatePickUp';
+import RateDelivery from './Rate/RateDelivery';
 
 const QueryCheck = () => {
   const [queryId, setQueryId] = useState('');
@@ -87,7 +89,19 @@ const QueryCheck = () => {
             </div>
             <div className='rateBlock'>
               <React.Fragment key={response.id}>
-                <List
+                <RateData
+                  response={response} />
+              </React.Fragment>
+            </div>
+            <div className='rate2Block'>
+              <React.Fragment key={response.id}>
+                <RatePickUp
+                  response={response} />
+              </React.Fragment>
+            </div>
+            <div className='rate3Block'>
+              <React.Fragment key={response.id}>
+                <RateDelivery
                   response={response} />
               </React.Fragment>
             </div>
