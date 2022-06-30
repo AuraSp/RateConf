@@ -1,5 +1,6 @@
 require "aws-sdk"
-require "json"
+require 'json'
+require 'date'
 
 class ExtractorService
   PdfField = Struct.new(:value, :x, :y, :width, :height)
@@ -99,8 +100,8 @@ class ExtractorService
       if temp_text.nil? == false
         if found == true
           values_text.push(temp_text)
-          tempResponse = responseBlocks[i + 3].text
-          if tempResponse.length() == 15
+          tempResponse = responseBlocks[i+3].text
+          if validate_date?(tempResponse)
             values_text.push(tempResponse)
           end
           found = false
@@ -187,7 +188,7 @@ class ExtractorService
       indexAddress = keys_map.find_index("Address:")
       indexDate = keys_map.find_index("Date:")
 
-      if values_text[indexDate + 1].length() == 15
+      if validate_date?(values_text[indexDate + 1])
         stopType = "Stop"
         companyName = values_text[indexName]
         address = values_text[indexAddress + 1]
@@ -239,5 +240,9 @@ class ExtractorService
       weight: weight,
       stopData: [pickUpStopData, deliveryStopData],
     )
+  end
+
+  def validate_date?(str, format="%m/%d/%Y")
+    Date.strptime(str, format) rescue false
   end
 end
