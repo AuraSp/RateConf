@@ -8,13 +8,6 @@ class ExtractorService
   RateConfStopData = Struct.new(:stopType, :pu, :companyName, :address, :phone, :customerAppTimeFrom, :customerAppTimeTo, keyword_init: true)
 
   def extractData(company, responseBlocks)
-    #temporary data to simulate aws response blocks
-    #text = File.read("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/data.json")
-    #responseBlocks = JSON.parse(text, object_class: OpenStruct)
-  
-    #text = File.read("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/data.json")
-    #responseBlocks = JSON.parse(text, object_class: OpenStruct)
-
     #Company parameter
     #kenco/rjw
     case company
@@ -59,8 +52,9 @@ class ExtractorService
       stopType: stopType,
       companyName: companyName,
       address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+      customerAppTimeFrom: customerAppTimeFrom,
+      customerAppTimeTo: customerAppTimeTo,
+    )
     #delivery stop data
     stopType = "Delivery"
     companyName = keyValuePairs["Destination: "].split(",")[0]
@@ -86,8 +80,6 @@ class ExtractorService
       weight: weight,
       stopData: [pickUpStopData, deliveryStopData],
     )
-
-    
   end
 
   def extractData_rjw(responseBlocks)
@@ -99,12 +91,12 @@ class ExtractorService
     values_text = []
 
     found = false
-    i = 0;
+    i = 0
 
     for block in responseBlocks
       temp_text = block.text
       type = block.block_type
-      
+
       if temp_text.nil? == false
         if found == true
           values_text.push(temp_text)
@@ -143,16 +135,15 @@ class ExtractorService
       keys.push(key)
       values_map.push(val)
       if rjwData.key?(key)
-        rjwData[key+"1"] = val
-        
+        rjwData[key + "1"] = val
       else
         rjwData[key] = val
       end
     end
 
     customer = "Rjw"
-    notificationEmail = values_map[keys.find_index('Email: ')]
-    customerLoad = values_map[keys.find_index('Pieces \ Spots: ')] 
+    notificationEmail = values_map[keys.find_index("Email: ")]
+    customerLoad = values_map[keys.find_index('Pieces \ Spots: ')]
     linehaulRate = values_map[keys.find_index("Total Carrier Pay: ")]
     fuelSurcharge = nil
     weight = values_map[keys.find_index("Weight (lbs): ")]
@@ -174,11 +165,12 @@ class ExtractorService
     end
 
     pickUpStopData = RateConfStopData.new(
-      stopType: stopType, 
-      companyName: companyName, 
+      stopType: stopType,
+      companyName: companyName,
       address: address,
-      customerAppTimeFrom: customerAppTimeFrom, 
-      customerAppTimeTo: customerAppTimeTo)
+      customerAppTimeFrom: customerAppTimeFrom,
+      customerAppTimeTo: customerAppTimeTo,
+    )
 
     #delete used keys and values (because of duplicated keys)
     keys_map.delete_at(0)
@@ -197,7 +189,6 @@ class ExtractorService
       indexDate = keys_map.find_index("Date:")
 
       if validate_date?(values_text[indexDate + 1])
-      
         stopType = "Stop"
         companyName = values_text[indexName]
         address = values_text[indexAddress + 1]
@@ -210,15 +201,16 @@ class ExtractorService
         end
 
         deliveryStop = RateConfStopData.new(
-          stopType: stopType, 
-          companyName: companyName, 
+          stopType: stopType,
+          companyName: companyName,
           address: address,
-          customerAppTimeFrom: customerAppTimeFrom, 
-          customerAppTimeTo: customerAppTimeTo)
-        
+          customerAppTimeFrom: customerAppTimeFrom,
+          customerAppTimeTo: customerAppTimeTo,
+        )
+
         deliveryStopData.push(deliveryStop)
 
-          puts deliveryStopData
+        puts deliveryStopData
 
         keys_map.delete_at(0)
         keys_map.delete_at(0)
@@ -236,17 +228,17 @@ class ExtractorService
         values_text.delete_at(0)
         values_text.delete_at(0)
         values_text.delete_at(0)
+      end
     end
-  end
-  
-  rateConfData = RateConfData.new(
-      customer:customer,
+
+    rateConfData = RateConfData.new(
+      customer: customer,
       notificationEmail: notificationEmail,
       customerLoad: customerLoad,
       linehaulRate: linehaulRate,
       fuelSurcharge: fuelSurcharge,
       weight: weight,
-      stopData: [pickUpStopData, deliveryStopData]
+      stopData: [pickUpStopData, deliveryStopData],
     )
   end
 
@@ -254,4 +246,3 @@ class ExtractorService
     Date.strptime(str, format) rescue false
   end
 end
-
