@@ -1,16 +1,12 @@
+require "aws-sdk"
+require "json"
+
 class ExtractorService
   PdfField = Struct.new(:value, :x, :y, :width, :height)
   RateConfData = Struct.new(:salesRep, :customer, :notificationEmail, :loadInstrunctions, :customerLoad, :linehaulRate, :fuelSurcharge, :commodity, :weight, :stopData, keyword_init: true)
   RateConfStopData = Struct.new(:stopType, :pu, :companyName, :address, :phone, :customerAppTimeFrom, :customerAppTimeTo, keyword_init: true)
 
   def extractData(company, responseBlocks)
-    #temporary data to simulate aws response blocks
-    #text = File.read("/home/minvydas/Desktop/intern/pdfparser/rateconfocr/server/app/services/data.json")
-    #responseBlocks = JSON.parse(text, object_class: OpenStruct)
-
-    #text = File.read("/home/rytis/Documents/GitHub/rateconfocr/server/app/services/data.json")
-    #responseBlocks = JSON.parse(text, object_class: OpenStruct)
-
     #Company parameter
     #kenco/rjw
     case company
@@ -19,7 +15,7 @@ class ExtractorService
     when "rjw"
       extractData_rjw(responseBlocks)
     else
-      raise NotImplementedError
+      raise StandardError.new "Company not implemented"
     end
   end
 
@@ -86,165 +82,162 @@ class ExtractorService
   end
 
   def extractData_rjw(responseBlocks)
-    begin
-      key_map = {}
-      value_map = {}
-      block_map = {}
+    key_map = {}
+    value_map = {}
+    block_map = {}
 
-      keys_map = []
-      values_text = []
+    keys_map = []
+    values_text = []
 
-      found = false
-      i = 0
+    found = false
+    i = 0
 
-      for block in responseBlocks
-        temp_text = block.text
-        type = block.block_type
+    for block in responseBlocks
+      temp_text = block.text
+      type = block.block_type
 
-        if temp_text.nil? == false
-          if found == true
-            values_text.push(temp_text)
-            tempResponse = responseBlocks[i + 3].text
-            if tempResponse.length() == 15
-              values_text.push(tempResponse)
-            end
-            found = false
+      if temp_text.nil? == false
+        if found == true
+          values_text.push(temp_text)
+          tempResponse = responseBlocks[i + 3].text
+          if tempResponse.length() == 15
+            values_text.push(tempResponse)
           end
-          if temp_text["Name:"] || temp_text["Address:"] || temp_text["Date:"]
-            if type == "LINE"
-              keys_map.push(temp_text)
-              found = true
-            end
+          found = false
+        end
+        if temp_text["Name:"] || temp_text["Address:"] || temp_text["Date:"]
+          if type == "LINE"
+            keys_map.push(temp_text)
+            found = true
           end
         end
-        block_id = block.id
-        block_map[block_id] = block
-        if block.block_type == "KEY_VALUE_SET"
-          if block.entity_types[0] == "KEY"
-            key_map[block_id] = block
-          else
-            value_map[block_id] = block
-          end
-        end
-        i = i + 1
       end
-      rjwData = {}
-      keys = []
-      values_map = []
-
-      key_map.each do |block_id, key_block|
-        value_block = DataExtractorService.new.findValueBlockRjw(key_block, value_map)
-        key = DataExtractorService.new.getTextRjw(key_block, block_map)
-        val = DataExtractorService.new.getTextRjw(value_block, block_map)
-        keys.push(key)
-        values_map.push(val)
-        if rjwData.key?(key)
-          rjwData[key + "1"] = val
+      block_id = block.id
+      block_map[block_id] = block
+      if block.block_type == "KEY_VALUE_SET"
+        if block.entity_types[0] == "KEY"
+          key_map[block_id] = block
         else
-          rjwData[key] = val
+          value_map[block_id] = block
         end
       end
+      i = i + 1
+    end
+    rjwData = {}
+    keys = []
+    values_map = []
 
-      customer = "Rjw"
-      notificationEmail = values_map[keys.find_index("Email: ")]
-      customerLoad = values_map[keys.find_index('Pieces \ Spots: ')]
-      linehaulRate = values_map[keys.find_index("Total Carrier Pay: ")]
-      fuelSurcharge = nil
-      weight = values_map[keys.find_index("Weight (lbs): ")]
+    key_map.each do |block_id, key_block|
+      value_block = DataExtractorService.new.findValueBlockRjw(key_block, value_map)
+      key = DataExtractorService.new.getTextRjw(key_block, block_map)
+      val = DataExtractorService.new.getTextRjw(value_block, block_map)
+      keys.push(key)
+      values_map.push(val)
+      if rjwData.key?(key)
+        rjwData[key + "1"] = val
+      else
+        rjwData[key] = val
+      end
+    end
 
-      #pickup data
+    customer = "Rjw"
+    notificationEmail = values_map[keys.find_index("Email: ")]
+    customerLoad = values_map[keys.find_index('Pieces \ Spots: ')]
+    linehaulRate = values_map[keys.find_index("Total Carrier Pay: ")]
+    fuelSurcharge = nil
+    weight = values_map[keys.find_index("Weight (lbs): ")]
+
+    #pickup data
+    indexName = keys_map.find_index("Name:")
+    indexAddress = keys_map.find_index("Address:")
+    indexDate = keys_map.find_index("Date:")
+
+    stopType = "Pick Up"
+    companyName = values_text[indexName]
+    address = values_text[indexAddress + 1]
+    if values_text[indexDate].nil? == false
+      customerAppTimeFrom = values_text[indexDate]
+      customerAppTimeTo = values_text[indexDate + 1]
+    else
+      customerAppTimeFrom = nil
+      customerAppTimeTo = nil
+    end
+
+    pickUpStopData = RateConfStopData.new(
+      stopType: stopType,
+      companyName: companyName,
+      address: address,
+      customerAppTimeFrom: customerAppTimeFrom,
+      customerAppTimeTo: customerAppTimeTo,
+    )
+
+    #delete used keys and values (because of duplicated keys)
+    keys_map.delete_at(0)
+    keys_map.delete_at(0)
+    keys_map.delete_at(0)
+
+    values_text.delete_at(0)
+    values_text.delete_at(0)
+    values_text.delete_at(0)
+    values_text.delete_at(0)
+
+    deliveryStopData = []
+    while keys_map.include? "Name:"
       indexName = keys_map.find_index("Name:")
       indexAddress = keys_map.find_index("Address:")
       indexDate = keys_map.find_index("Date:")
 
-      stopType = "Pick Up"
-      companyName = values_text[indexName]
-      address = values_text[indexAddress + 1]
-      if values_text[indexDate].nil? == false
-        customerAppTimeFrom = values_text[indexDate]
-        customerAppTimeTo = values_text[indexDate + 1]
-      else
-        customerAppTimeFrom = nil
-        customerAppTimeTo = nil
-      end
-
-      pickUpStopData = RateConfStopData.new(
-        stopType: stopType,
-        companyName: companyName,
-        address: address,
-        customerAppTimeFrom: customerAppTimeFrom,
-        customerAppTimeTo: customerAppTimeTo,
-      )
-
-      #delete used keys and values (because of duplicated keys)
-      keys_map.delete_at(0)
-      keys_map.delete_at(0)
-      keys_map.delete_at(0)
-
-      values_text.delete_at(0)
-      values_text.delete_at(0)
-      values_text.delete_at(0)
-      values_text.delete_at(0)
-
-      deliveryStopData = []
-      while keys_map.include? "Name:"
-        indexName = keys_map.find_index("Name:")
-        indexAddress = keys_map.find_index("Address:")
-        indexDate = keys_map.find_index("Date:")
-
-        if values_text[indexDate + 1].length() == 15
-          stopType = "Stop"
-          companyName = values_text[indexName]
-          address = values_text[indexAddress + 1]
-          if values_text[indexDate].nil? == false
-            customerAppTimeFrom = values_text[indexDate]
-            customerAppTimeTo = values_text[indexDate + 1]
-          else
-            customerAppTimeFrom = nil
-            customerAppTimeTo = nil
-          end
-
-          deliveryStop = RateConfStopData.new(
-            stopType: stopType,
-            companyName: companyName,
-            address: address,
-            customerAppTimeFrom: customerAppTimeFrom,
-            customerAppTimeTo: customerAppTimeTo,
-          )
-
-          deliveryStopData.push(deliveryStop)
-
-          puts deliveryStopData
-
-          keys_map.delete_at(0)
-          keys_map.delete_at(0)
-          keys_map.delete_at(0)
-
-          values_text.delete_at(0)
-          values_text.delete_at(0)
-          values_text.delete_at(0)
-          values_text.delete_at(0)
+      if values_text[indexDate + 1].length() == 15
+        stopType = "Stop"
+        companyName = values_text[indexName]
+        address = values_text[indexAddress + 1]
+        if values_text[indexDate].nil? == false
+          customerAppTimeFrom = values_text[indexDate]
+          customerAppTimeTo = values_text[indexDate + 1]
         else
-          keys_map.delete_at(0)
-          keys_map.delete_at(0)
-          keys_map.delete_at(0)
-
-          values_text.delete_at(0)
-          values_text.delete_at(0)
-          values_text.delete_at(0)
+          customerAppTimeFrom = nil
+          customerAppTimeTo = nil
         end
-      end
 
-      rateConfData = RateConfData.new(
-        customer: customer,
-        notificationEmail: notificationEmail,
-        customerLoad: customerLoad,
-        linehaulRate: linehaulRate,
-        fuelSurcharge: fuelSurcharge,
-        weight: weight,
-        stopData: [pickUpStopData, deliveryStopData],
-      )
-    rescue KeyError
+        deliveryStop = RateConfStopData.new(
+          stopType: stopType,
+          companyName: companyName,
+          address: address,
+          customerAppTimeFrom: customerAppTimeFrom,
+          customerAppTimeTo: customerAppTimeTo,
+        )
+
+        deliveryStopData.push(deliveryStop)
+
+        puts deliveryStopData
+
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+      else
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+        keys_map.delete_at(0)
+
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+        values_text.delete_at(0)
+      end
     end
+
+    rateConfData = RateConfData.new(
+      customer: customer,
+      notificationEmail: notificationEmail,
+      customerLoad: customerLoad,
+      linehaulRate: linehaulRate,
+      fuelSurcharge: fuelSurcharge,
+      weight: weight,
+      stopData: [pickUpStopData, deliveryStopData],
+    )
   end
 end

@@ -5,7 +5,6 @@ class DataExtractorService
 
   #extract function returning key value pairs
   def extractKeyValuePairs(awsBlocks)
-    begin
     extractedKey = ""
     prevExtractedKey = ""
     extractedValue = ""
@@ -29,26 +28,17 @@ class DataExtractorService
         keyValueHash.store(
           prevExtractedKey, extractedValue
         )
-        #PdfField.new(extractedValue,
-        #    resp.blocks[index].geometry.bounding_box.left,
-        #   resp.blocks[index].geometry.bounding_box.top,
-        #    resp.blocks[index].geometry.bounding_box.width,
-        #    resp.blocks[index].geometry.bounding_box.height)
-        #)
 
         prevExtractedKey = ""
         extractedValue = ""
       end
     end
     return keyValueHash
-  rescue KeyError
-  end
   end
 
   #extract function returning tables
   #very shit currently
   def extractKeyTableData(awsBlocks)
-    begin
     extractedData = []
     #buffer 2d array
     extractedArray = Array.new(10) { Array.new(10) { } }
@@ -72,8 +62,6 @@ class DataExtractorService
     end
 
     return extractedData
-  rescue Exceptions::KeyTableDataExtraction
-  end
   end
 
   #Helper functions

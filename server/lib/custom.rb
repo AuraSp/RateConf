@@ -1,10 +1,10 @@
 module Custom
-  class FileNotFound < ::StandardError; end
-  class FileNotUploaded < StandardError; end
-  class ImageConvertingError < StandardError; end
-  class PdfServiceError < StandardError; end
-  class AwsTextractorResponse < StandardError; end
-  class KeyTableDataExtraction < StandardError; end
-  class AwsS3ClientServiceError < StandardError; end
-  class AwsTextractorServiceError < StandardError; end
+  #class FileNotFoundError < StandardError; end
+  #class FileNotUploadedError < StandardError; end
+  # class ImageConvertingError < StandardError; end
+  # class PdfServiceError < StandardError; end
+  # class AwsTextractorResponseError < StandardError end
+  # class KeyTableDataExtractionError < StandardError; end
+  # class AwsS3ClientServiceErrorError < StandardError; end
+  # class AwsTextractorServiceError < StandardError; end
 end

@@ -64,20 +64,6 @@ class AnalyzePdfJob < ApplicationJob
 
         if response.job_status == "SUCCEEDED"
           @audit.logs.create(text: "AWS Textract API received successfully")
-
-          begin
-            extractedData = ExtractorService.new.extractData(company, response.blocks)
-            @audit.logs.create(text: "extracted data taken successfully")
-            @lastlog = @query.audit.logs.last
-            @query.update(status: "finished", rate_conf_data: extractedData, error_data: @lastlog.text)
-          rescue Exception => e
-            @audit.logs.create(text: ("extract data failed" + e.backtrace.inspect))
-            @lastlog = @query.audit.logs.last
-            @query.update(status: "failed", rate_conf_data: nil, error_data: @lastlog.text)
-          end
-
-          @query.save
-          ContactMailer.analyzedData(@audit).deliver_later
           break
         end
         if response.job_status == "FAILED"
@@ -90,13 +76,22 @@ class AnalyzePdfJob < ApplicationJob
         end
         sleep(2)
       end
-    rescue Exception => ex
-      render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
+
+      if response.job_status == "SUCCEEDED"
+        @audit.logs.create(text: "extracting fields from AWS data")
+        extractedData = ExtractorService.new.extractData(company, response.blocks)
+        @audit.logs.create(text: "extracted data taken successfully")
+
+        #finalize
+        @lastlog = @query.audit.logs.last
+        @query.update(status: "finished", rate_conf_data: extractedData, error_data: @lastlog.text)
+        @query.save
+        ContactMailer.analyzedData(@audit).deliver_later
+      end
+    rescue Exception => e
+      @audit.logs.create(text: ("extract data failed!" + "Exception Occurred #{e.class}. Message: #{e.message}. Backtrace:  \n #{e.backtrace.join("\n")}"))
+      @lastlog = @query.audit.logs.last
+      @query.update(status: "failed", rate_conf_data: nil, error_data: @lastlog.text)
     end
   end
-
-  # def check
-  #   if defined?(@query.where(aws_s3_name: params[:aws_s3_name])) && @query.where(aws_s3_name: params[:aws_s3_name]).present?
-  #     puts "acceptable variable"
-  #   end
 end
