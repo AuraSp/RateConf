@@ -3,8 +3,6 @@ require "aws-sdk"
 class AwsService
   def object_uploaded?(s3, bucket_name, object_key, path)
     response = s3.bucket(bucket_name).object(object_key).upload_file(path) #file location
-  rescue
-    false
   end
 
   def uploadToS3(path, fileID, pdfBase64 = nil)
@@ -14,19 +12,15 @@ class AwsService
       secret_access_key: Rails.application.credentials.aws.secret_access_key,
       region: Rails.application.credentials.aws.region,
     )
-
     bucket_name = "team3-pdfers-rateconfocr-bucket" #always remains the same
     object_key = File.basename(fileID.to_s + ".pdf")
-    Audit.last.logs.create(text: "uploading to aws")
-
+    # Audit.last.logs.create(text: "uploading to aws")
     if object_uploaded?(s3, bucket_name, object_key, path)
       puts "Object '#{object_key}' uploaded to bucket - '#{bucket_name}'."
       PdfService.new.deleteTempPdf(path)
-      Audit.last.logs.create(text: "uploaded to bucket successfully")
       return object_key
     else
       puts "Object '#{object_key}' not uploaded to bucket - '#{bucket_name}'."
-      Audit.last.logs.create(text: "upload to bucket failed")
     end
   end
 

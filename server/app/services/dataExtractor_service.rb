@@ -28,12 +28,6 @@ class DataExtractorService
         keyValueHash.store(
           prevExtractedKey, extractedValue
         )
-        #PdfField.new(extractedValue,
-        #    resp.blocks[index].geometry.bounding_box.left,
-        #   resp.blocks[index].geometry.bounding_box.top,
-        #    resp.blocks[index].geometry.bounding_box.width,
-        #    resp.blocks[index].geometry.bounding_box.height)
-        #)
 
         prevExtractedKey = ""
         extractedValue = ""

@@ -16,7 +16,7 @@ class ExtractorService
     when "rjw"
       extractData_rjw(responseBlocks)
     else
-      raise RuntimeError
+      raise StandardError.new "Company not implemented"
     end
   end
 
