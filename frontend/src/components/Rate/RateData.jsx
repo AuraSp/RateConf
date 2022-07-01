@@ -15,6 +15,7 @@ const rateData = ({ response }) => {
         <li>{rateData[6]}</li>
         <li>{rateData[7]}</li>
         <li>{rateData[8]}</li>
+        <li>{rateData[9]}</li>
       </ul>
     </>
   )
