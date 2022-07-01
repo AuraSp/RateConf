@@ -14,7 +14,6 @@ class AwsService
     )
     bucket_name = "team3-pdfers-rateconfocr-bucket" #always remains the same
     object_key = File.basename(fileID.to_s + ".pdf")
-    # Audit.last.logs.create(text: "uploading to aws")
     if object_uploaded?(s3, bucket_name, object_key, path)
       puts "Object '#{object_key}' uploaded to bucket - '#{bucket_name}'."
       PdfService.new.deleteTempPdf(path)
