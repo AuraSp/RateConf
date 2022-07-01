@@ -8,7 +8,6 @@ const RatePickUp = ({ response }) => {
             <h4>Rates Stop Data(Pick up):</h4>
             <ul className='list'>
                 <li>{rateData[9]}</li>
-                <li>{rateData[10]}</li>
                 <li>{rateData[11]}</li>
                 <li>{rateData[12]}</li>
                 <li>{rateData[13]}</li>
