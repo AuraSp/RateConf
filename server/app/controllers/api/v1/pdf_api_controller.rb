@@ -26,11 +26,10 @@ class Api::V1::PdfApiController < ApplicationController
 
   def index
     begin
+      #find query by UUID and show its information
       render json: { query: Query.where(query_id: params[:id]) }, status: :ok
-      #ContactMailer.analyzedData().deliver_later
     rescue Exception => ex
       render json: { status: "FAILURE", error: ex, errorTrace: ex.backtrace }, status: 500
-      #ContactMailer.analyzedData_null().deliver_later
     ensure
     end
   end

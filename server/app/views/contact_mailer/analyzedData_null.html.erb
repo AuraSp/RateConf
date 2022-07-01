@@ -1,10 +1,11 @@
 <h2>Data process response</h2>
 <p>Your data analization failed due to some kind of problem</p>
 
-<h3>Errors were found:</h3>
+<h2>One or more errors occured </h2>
+<h3>Analyze Log </h3>
 
-<ul>
+<div>
   <% @e.each do |x| %> 
-      <li><%= x.text %><li>
+      <pre><%= x.text %><pre>
   <% end %>
-  </ul>
+</div>

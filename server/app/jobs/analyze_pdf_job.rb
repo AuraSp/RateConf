@@ -87,7 +87,7 @@ class AnalyzePdfJob < ApplicationJob
       end
     rescue Exception => e
       #finalize failure response
-      @audit.logs.create(text: ("extract data failed!" + "Exception Occurred #{e.class}. Message: #{e.message}. Backtrace:  \n #{e.backtrace.join("\n")}"))
+      @audit.logs.create(text: ("extract data failed!" + "Exception Occurred #{e.class}. Message: #{e.message}. \n Backtrace:  \n #{e.backtrace.join("\n")}"))
       @lastlog = @query.audit.logs.last
       @query.update(status: "failed", rate_conf_data: nil, error_data: @lastlog.text)
       @query.save
