@@ -37,7 +37,7 @@ class DataExtractorService
   end
 
   #extract function returning tables
-  #very shit currently
+  #could be improved
   def extractKeyTableData(awsBlocks)
     extractedData = []
     #buffer 2d array
