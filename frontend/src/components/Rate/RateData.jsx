@@ -7,7 +7,6 @@ const rateData = ({ response }) => {
     <>
       <h4>Rate Sales Data:</h4>
       <ul className='list'>
-        <li>{rateData[0]}</li>
         <li>{rateData[1]}</li>
         <li>{rateData[2]}</li>
         <li>{rateData[3]}</li>

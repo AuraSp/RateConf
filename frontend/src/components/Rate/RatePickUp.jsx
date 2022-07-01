@@ -15,7 +15,6 @@ const RatePickUp = ({ response }) => {
                 <li>{rateData[14]}</li>
                 <li>{rateData[15]}</li>
                 <li>{rateData[16]}</li>
-                <li>{rateData[17]}</li>
             </ul>
         </>
     )
