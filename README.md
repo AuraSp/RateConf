@@ -1,5 +1,6 @@
 # Rateconf OCR
 Data Entry Project
+**This repository is the copy  of the original one. All the credits goes to the 'UAB' GP Transco contributors, who developed this project with me**
 
 ## About
 This repo contains API(rateconfocr) for extracting rate confirmation document information from pdfs and web client(frontend) for testing it.
